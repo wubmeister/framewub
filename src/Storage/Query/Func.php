@@ -33,7 +33,7 @@ class Func
      */
     public function __construct($expression)
     {
-        $this->expression = $expression
+        $this->expression = $expression;
     }
 
     /**
