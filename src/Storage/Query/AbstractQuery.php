@@ -46,6 +46,13 @@ class AbstractQuery
     protected $bind = [];
 
     /**
+     * The keys for the values to set
+     *
+     * @var array
+     */
+    protected $valueKeys = [];
+
+    /**
      * Generates an qualified (aliased) table name and adds the columns to the query if needed
      *
      * @param string|array $table
@@ -234,6 +241,25 @@ class AbstractQuery
         }
         $this->whereClause .= $this->whereStr($conditions, 'OR');
 
+        return $this;
+    }
+
+    /**
+     * Adds values to set
+     *
+     * @param array $values
+     *   An associative array of values
+     *
+     * @return Framewub\Storage\Query\Select
+     *   Provides method chaining
+     */
+    public function values($values) {
+        foreach ($values as $key => $value) {
+            $this->bindParam(":{$key}", $value);
+            if (!in_array($key, $this->valueKeys)) {
+                $this->valueKeys[] = $key;
+            }
+        }
         return $this;
     }
 }

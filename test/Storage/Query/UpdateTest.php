@@ -21,7 +21,7 @@ class UpdateTest extends TestCase
         $this->assertEquals("UPDATE `foo`", (string)$update);
     }
 
-    public function testSet()
+    public function testValues()
     {
         // Create object
         $update = new Update();
@@ -29,10 +29,10 @@ class UpdateTest extends TestCase
         // Add 'table' clause
         $result = $update->table('foo')
             ->where([ 'id' => 42 ])
-            ->data([ 'lorem' => 'ipsum', 'dingen' => 'zaken' ]);
+            ->values([ 'lorem' => 'ipsum', 'dingen' => 'zaken' ]);
 
         // Assert chaining
-        $this->assertEquals($update, $result, "Method 'data' should return the Update object for chaining");
+        $this->assertEquals($update, $result, "Method 'values' should return the Update object for chaining");
         // Assert the resulting query
         $this->assertEquals("UPDATE `foo` SET `lorem` = :lorem, `dingen` = :dingen WHERE (`id` = :bind1)", (string)$update);
         // Assert bind params

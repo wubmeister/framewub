@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Helper to construct UPDATE queries for SQL
+ * Helper to construct DELETE queries for SQL
  *
  * @package    framewub/storage
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
@@ -13,9 +13,9 @@
 namespace Framewub\Storage\Query;
 
 /**
- * Update query builder
+ * Delete query builder
  */
-class Update extends AbstractQuery
+class Delete extends AbstractQuery
 {
     /**
      * Sets the table for this query
@@ -28,7 +28,7 @@ class Update extends AbstractQuery
      * @return Framewub\Storage\Query\Select
      *   Provides method chaining
      */
-    public function table($table)
+    public function from($table)
     {
         $this->tableName = $this->tableStr($table, []);
 
@@ -36,17 +36,14 @@ class Update extends AbstractQuery
     }
 
     /**
-     * ToString function returns the UPDATE query
+     * ToString function returns the DELETE query
      *
      * @return string
      *   The literal expression
      */
     public function __toString()
     {
-        $sql = "UPDATE {$this->tableName}";
-        if (count($this->valueKeys)) {
-            $sql .= " SET " . implode(', ', array_map(function ($key) { return "`{$key}` = :{$key}"; }, $this->valueKeys));
-        }
+        $sql = "DELETE FROM {$this->tableName}";
         if ($this->whereClause) {
             $sql .= " WHERE {$this->whereClause}";
         }
