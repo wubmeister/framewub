@@ -6,7 +6,7 @@
  * @package    framewub/storage
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
- * @license    http://mit-license.org/
+ * @license    GPL
  * @link       https://github.com/wubmeister/framewub
  */
 
