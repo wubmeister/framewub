@@ -38,7 +38,7 @@ class VarExp
      *
      * @var string
      */
-    protected $params = [ '*' ];
+    protected $params = [];
 
     /**
      * The URL mode flag
@@ -94,7 +94,36 @@ class VarExp
     }
 
     /**
-     * Matches the string against the pattern. If there is a match, all matches will be mapped to the specified variable names.
+     * Matches a string against a regular expression. If there is a match, all matches will be mapped to the specified variable names.
+     *
+     * @param string $regexp
+     *   The PCRE regeular expression to match agains
+     * @param array $params
+     *   The parameter names
+     * @param string $string
+     *   The string to match
+     * @param bool $urlMode
+     *   OPTIONAL. Flag to enable URL mode. In URL mode, slashes before a variable will be included in the regular expression subpatterns, so that optional URL parts can be matched properly.
+     *
+     * @return array
+     *   An associative array with all the matches mapped to variable names (keys of the array). The key '*' holds the entire macthed string.
+     *   If no match is found, this method will return null
+     */
+    public static function matchPattern($regex, $params, $string, $urlMode = false)
+    {
+        $result = [];
+        array_unshift($params, '*');
+        if (preg_match($regex, $string, $match)) {
+            foreach ($match as $i => $m) {
+                $result[$params[$i]] = $urlMode && $m[0] == '/' ? substr($m, 1) : $m;
+            }
+            return $result;
+        }
+        return null;
+    }
+
+    /**
+     * Matches a string against the pattern. If there is a match, all matches will be mapped to the specified variable names.
      *
      * @param string $string
      *   The string to match
@@ -105,14 +134,38 @@ class VarExp
      */
     public function match($string)
     {
-        $result = [];
-        if (preg_match($this->regex, $string, $match)) {
-            foreach ($match as $i => $m) {
-                $result[$this->params[$i]] = $this->urlMode && $m[0] == '/' ? substr($m, 1) : $m;
+        return self::matchPattern($this->regex, $this->params, $string, $this->urlMode);
+    }
+
+    /**
+     * Uses the pattern as template to fill with values. The variables (keys) present in the specified array will be replaced. Optional variables (keys) which are not present in the specified array will be omitted from the resulting string. Non-optional variables (keys) which are not present in the specified array will be left as-is, with their curly braces.
+     *
+     * @param array $pattern
+     *   The pattern
+     * @param array $variables
+     *   Associative array of variables
+     * @param bool $urlMode
+     *   OPTIONAL. Flag to enable URL mode. In URL mode, slashes before a variable will be included in the regular expression subpatterns, so that optional URL parts can be matched properly.
+     *
+     * @return string
+     *   The resulting string
+     */
+    public static function buildPattern($pattern, $variables, $urlMode = false)
+    {
+        $tokens = [];
+        foreach ($variables as $key => $value) {
+            $tkey = '{' . $key . '}';
+            if ($urlMode) {
+                $tokens['/'.$tkey.'?'] = '/'.$value;
+                $tokens['/'.$tkey] = '/'.$value;
             }
-            return $result;
+            $tokens[$tkey.'?'] = $value;
+            $tokens[$tkey] = $value;
         }
-        return null;
+        $result = strtr($pattern, $tokens);
+        $result = preg_replace('/' . ($urlMode ? '\\/?' : '') . '\{[^\}]+\}\?/', '', $result);
+
+        return $result;
     }
 
     /**
@@ -126,19 +179,39 @@ class VarExp
      */
     public function build($variables)
     {
-        $tokens = [];
-        foreach ($variables as $key => $value) {
-            $tkey = '{' . $key . '}';
-            if ($this->urlMode) {
-                $tokens['/'.$tkey.'?'] = '/'.$value;
-                $tokens['/'.$tkey] = '/'.$value;
-            }
-            $tokens[$tkey.'?'] = $value;
-            $tokens[$tkey] = $value;
-        }
-        $result = strtr($this->pattern, $tokens);
-        $result = preg_replace('/' . ($this->urlMode ? '\\/?' : '') . '\{[^\}]+\}\?/', '', $result);
+        return self::buildPattern($this->pattern, $variables, $this->urlMode);
+    }
 
-        return $result;
+    /**
+     * Reveals the regular expression to the world
+     *
+     * @return string
+     *   The regular expression
+     */
+    public function getRegex()
+    {
+        return $this->regex;
+    }
+
+    /**
+     * Reveals the pattern to the world
+     *
+     * @return string
+     *   The pattern
+     */
+    public function getPattern()
+    {
+        return $this->pattern;
+    }
+
+    /**
+     * Reveals the parameters to the world
+     *
+     * @return array
+     *   The parameter names
+     */
+    public function getParams()
+    {
+        return $this->params;
     }
 }

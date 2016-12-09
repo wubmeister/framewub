@@ -31,7 +31,34 @@ class FuncTest extends TestCase
 
         // The expression to test
         $match = $exp->match('not matching expression FOO with optional BAR');
-        $this->assertEquals(null, $match['bar']);
+        $this->assertEquals(null, $match);
+    }
+
+    public function testStaticMatch()
+    {
+        // The expression to test
+        $match = VarExp::matchPattern('/^expression (.*) with optional (.*)?$/', [ 'foo', 'bar' ], 'expression FOO with optional BAR');
+
+        // Assert
+        $this->assertInternalType('array', $match);
+        $this->assertArrayHasKey('foo', $match);
+        $this->assertEquals('FOO', $match['foo']);
+        $this->assertArrayHasKey('bar', $match);
+        $this->assertEquals('BAR', $match['bar']);
+
+        // The expression to test
+        $match = VarExp::matchPattern('/^expression (.*) with optional (.*)?$/', [ 'foo', 'bar' ], 'expression FOO with optional ');
+
+        // Assert
+        $this->assertInternalType('array', $match);
+        $this->assertArrayHasKey('foo', $match);
+        $this->assertEquals('FOO', $match['foo']);
+        $this->assertArrayHasKey('bar', $match);
+        $this->assertEquals('', $match['bar']);
+
+        // The expression to test
+        $match = VarExp::matchPattern('/^expression (.*) with optional (.*)?$/', [ 'foo', 'bar' ], 'not matching expression FOO with optional BAR');
+        $this->assertEquals(null, $match);
     }
 
     public function testUrlMatch()
@@ -59,7 +86,7 @@ class FuncTest extends TestCase
 
         // The expression to test
         $match = $exp->match('/controller');
-        $this->assertEquals(null, $match['bar']);
+        $this->assertEquals(null, $match);
     }
 
     public function testBuild()
@@ -81,6 +108,24 @@ class FuncTest extends TestCase
         $this->assertEquals('expression {foo} with optional BAR', $result);
     }
 
+    public function testStaticBuild()
+    {
+        // The expression to test
+        $result = VarExp::buildPattern('expression {foo} with optional {bar}?', [ 'foo' => 'FOO', 'bar' => 'BAR' ]);
+        // Assert
+        $this->assertEquals('expression FOO with optional BAR', $result);
+
+        // The expression to test
+        $result = VarExp::buildPattern('expression {foo} with optional {bar}?', [ 'foo' => 'FOO' ]);
+        // Assert
+        $this->assertEquals('expression FOO with optional ', $result);
+
+        // The expression to test
+        $result = VarExp::buildPattern('expression {foo} with optional {bar}?', [ 'bar' => 'BAR' ]);
+        // Assert
+        $this->assertEquals('expression {foo} with optional BAR', $result);
+    }
+
     public function testUrlBuild()
     {
         // The expression to test
@@ -98,5 +143,33 @@ class FuncTest extends TestCase
         $result = $exp->build([ 'action' => 'show' ]);
         // Assert
         $this->assertEquals('/controller/show/{id}', $result);
+    }
+
+    public function testGetRegex()
+    {
+        // The expression to test
+        $exp = new VarExp('expression {foo} with optional {bar}?');
+        // Assert
+        $this->assertEquals('/^expression (.*) with optional (.*)?$/', $exp->getRegex());
+    }
+
+    public function testGetPattern()
+    {
+        // The expression to test
+        $exp = new VarExp('expression {foo} with optional {bar}?');
+        // Assert
+        $this->assertEquals('expression {foo} with optional {bar}?', $exp->getPattern());
+    }
+
+    public function testGetParams()
+    {
+        // The expression to test
+        $exp = new VarExp('expression {foo} with optional {bar}?');
+        $result = $exp->getParams();
+        // Assert
+        $this->assertInternalType('array', $result);
+        $this->assertContains('foo', $result);
+        $this->assertContains('bar', $result);
+
     }
 }
