@@ -95,6 +95,31 @@ class AbstractQuery
     }
 
     /**
+     * Adds one or more columns to the query
+     *
+     * @param string|array $columns
+     *   The column(s) to select from the table
+     * @param string $table
+     *   OPTIONAL. The table the columns belong to. Specify '*' if the column's don't belong to any table. This is also the default value.
+     */
+    protected function addColumns($columns, $table = '*')
+    {
+        if (!is_array($columns)) {
+            $columns = [ $columns ];
+        }
+
+        foreach ($columns as $key => $column) {
+            if ($column == '*') {
+                $this->columns[$table][] = "*";
+            } else if ($column instanceof Func) {
+                $this->columns[$table][] = (string)$column . (!is_numeric($key) ? " AS `{$key}`" : "");
+            } else {
+                $this->columns[$table][] = "`{$column}`" . (!is_numeric($key) ? " AS `{$key}`" : "");
+            }
+        }
+    }
+
+    /**
      * Generates a bind parameter name and binds the specified value to it
      *
      * @param mixed $value
@@ -215,7 +240,7 @@ class AbstractQuery
      * @return Framewub\Storage\Query\Select
      *   Provides method chaining
      */
-    public function where($conditions)
+    public function where(array $conditions)
     {
         if ($this->whereClause) {
             $this->whereClause .= " AND ";
@@ -234,7 +259,7 @@ class AbstractQuery
      * @return Framewub\Storage\Query\Select
      *   Provides method chaining
      */
-    public function orWhere($conditions)
+    public function orWhere(array $conditions)
     {
         if ($this->whereClause) {
             $this->whereClause .= " OR ";

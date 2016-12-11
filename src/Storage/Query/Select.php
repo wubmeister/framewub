@@ -85,6 +85,30 @@ class Select extends AbstractQuery
     }
 
     /**
+     * Adds or replaces columns for the query
+     *
+     * @param string|array $columns
+     *   The column(s) to select from the table
+     * @param bool $replaceAll
+     *   OPTIONAL. If true, this will replace all existing columns in the query with the specified ones. Defaults to false.
+     *
+     * @return Framewub\Storage\Query\Select
+     *   Provides method chaining
+     */
+    public function columns($columns, $replaceAll = false)
+    {
+        if ($replaceAll) {
+            $this->columns = [ '*' => [] ];
+        } else if (!isset($this->columns['*'])) {
+            $this->columns['*'] = [];
+        }
+
+        $this->addColumns($columns);
+
+        return $this;
+    }
+
+    /**
      * Adds a join to this query
      *
      * @param string|array $table
@@ -175,7 +199,11 @@ class Select extends AbstractQuery
      *   Provides method chaining
      */
     public function order($order) {
-        $this->orderBy = is_array($order) ? "`" . implode("`, `", $order) . "`" : "`{$order}`";
+        if (!is_array($order)) {
+            $order = [ $order ];
+        }
+        $order = array_map(function ($o) { $p = explode(' ', $o, 2); return "`{$p[0]}`" . (count($p) == 2 ? " {$p[1]}" : ""); }, $order);
+        $this->orderBy = implode(", ", $order);
 
         return $this;
     }

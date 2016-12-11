@@ -1,0 +1,247 @@
+<?php
+
+/**
+ * Abstract database storage class
+ *
+ * @package    framewub/storage
+ * @author     Wubbo Bos <wubbo@wubbobos.nl>
+ * @copyright  Copyright (c) Wubbo Bos
+ * @license    GPL
+ * @link       https://github.com/wubmeister/framewub
+ */
+
+namespace Framewub\Storage\Db;
+
+use PDO;
+use Framewub\Storage\StorageInterface;
+use Framewub\Storage\Query\AbstractQuery;
+use Framewub\Storage\Query\Select;
+use Framewub\Storage\Query\Insert;
+use Framewub\Storage\Query\Update;
+use Framewub\Storage\Query\Delete;
+
+/**
+ * Abstract database storage class
+ */
+class AbstractStorage implements StorageInterface
+{
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    protected $tableName;
+
+    /**
+     * The class of the returned object rows
+     *
+     * @var string
+     */
+    protected $objectClass;
+
+    /**
+     * The PDO adapter
+     *
+     * @var PDO
+     */
+    protected $pdo;
+
+    public function __construct($pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
+    /**
+     * Prepares a PDO statement with bind values
+     *
+     * @param Framewub\Storage\Query\AbstractQuery $query
+     *   The SQL query
+     *
+     * @return PDOStatement
+     *   The prepared PDO statement
+     */
+    protected function prepare(AbstractQuery $query)
+    {
+        $statement = $this->pdo->prepare((string)$query);
+        $params = $query->getBind();
+        foreach ($params as $key => $value) {
+            $statement->bindValue($key, $value);
+        }
+
+        return $statement;
+    }
+
+    /**
+     * Finds rows in the table matching the specified set of conditions.
+     *
+     * @param array $where
+     *   OPTIONAL. The conditions. If no conditions are specified, all rows in the table are fetched
+     * @param string|array $order
+     *   OPTIONAL. The order column(s)
+     */
+    public function find($where = null, $order = null)
+    {
+        $select = new Select();
+        $select->from($this->tableName);
+
+        if ($where) {
+            $select->where($where);
+        }
+        if ($order) {
+            $select->order($order);
+        }
+
+        $rowset = new Rowset($select, $this);
+        if ($this->objectClass) {
+            $rowset->setObjectClass($this->objectClass);
+        }
+        return $rowset;
+    }
+
+    /**
+     * Finds a single row in the table matching the specified ID or set of conditions.
+     *
+     * @param int|string|array $idOrWhere
+     *   An ID or set of conditions
+     */
+    public function findOne($idOrWhere = null)
+    {
+        $select = new Select();
+        $select->from($this->tableName);
+
+        if (is_array($idOrWhere)) {
+            $select->where($idOrWhere);
+        } else {
+            $select->where([ 'id' => $idOrWhere ]);
+        }
+
+        $rowset = new Rowset($select, $this);
+        if ($this->objectClass) {
+            $rowset->setObjectClass($this->objectClass);
+        }
+        return $rowset->fetchOne();
+    }
+
+    /**
+     * Inserts a row in the table
+     *
+     * @param array $values
+     *   The values to insert
+     *
+     * @return int
+     *   The ID of the newly inserted item or null on failure
+     */
+    public function insert(array $values)
+    {
+        $insert = new Insert();
+        $insert->into($this->tableName)->values($values);
+
+        $statement = $this->prepare($insert);
+
+        $id = null;
+        if ($statement->execute()) {
+            $id = $this->pdo->lastInsertId();
+        }
+
+        return $id;
+    }
+
+    /**
+     * Performs a DELETE or UPDATE, based on the passed argument, and returns the number of affected rows
+     *
+     * @param Framewub\Storage\Query\AbstractQuery $query
+     *   The Delete or Update query
+     * @param int|string|array
+     *   An ID or a set of conditions for the update query. If nothing is specified, all rows in the table will be updated.
+     *
+     * @return int
+     *   The number of affected rows
+     */
+    protected function deleteOrUpdate(AbstractQuery $query, &$idOrWhere)
+    {
+        if ($idOrWhere) {
+            if (is_array($idOrWhere)) {
+                $query->where($idOrWhere);
+            } else {
+                $query->where([ 'id' => $idOrWhere ]);
+            }
+        }
+
+        $statement = $this->prepare($query);
+
+        $numRows = 0;
+        if ($statement->execute()) {
+            $numRows = $statement->rowCount();
+        }
+
+        return $numRows;
+    }
+
+    /**
+     * Updates a row in the table
+     *
+     * @param array $values
+     *   The values to update
+     * @param int|string|array
+     *   OPTIONAL. An ID or a set of conditions for the update query. If nothing is specified, all rows in the table will be updated.
+     *
+     * @return int
+     *   The number of affected rows
+     */
+    public function update(array $values, $idOrWhere = null)
+    {
+        $update = new Update();
+        $update->table($this->tableName)->values($values);
+
+        return $this->deleteOrUpdate($update, $idOrWhere);
+    }
+
+    /**
+     * Deletes a row from the table
+     *
+     * @param int|string|array
+     *   An ID or a set of conditions for the update query. If nothing is specified, all rows in the table will be updated.
+     *
+     * @return int
+     *   The number of affected rows
+     */
+    public function delete($idOrWhere = null)
+    {
+        $delete = new Delete();
+        $delete->from($this->tableName);
+
+        return $this->deleteOrUpdate($delete, $idOrWhere);
+    }
+
+    /**
+     * Inserts or updates a row in the table. If there is an ID in the values, it will try to update the row with that ID
+     *
+     * @param array $values
+     *   The values to save
+     *
+     * @return int|string
+     *   The ID of the saved element
+     */
+    public function save(array $values)
+    {
+        if (isset($values['id'])) {
+            $id = $values['id'];
+            unset($values['id']);
+            $this->update($values, $id);
+        } else {
+            $id = $this->insert($values);
+        }
+
+        return $id;
+    }
+
+    /**
+     * Gets the PDO object
+     *
+     * @return PDO
+     */
+    public function getPdo()
+    {
+        return $this->pdo;
+    }
+}

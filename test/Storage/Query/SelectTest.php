@@ -111,11 +111,17 @@ class SelectTest extends TestCase
         // Assert the resulting query
         $this->assertEquals("SELECT `foo`.* FROM `foo` ORDER BY `bar`", (string)$select);
 
-        // Test multiple groups
+        // Test multiple orders
         $select = new Select();
         $select->from('foo')
             ->order([ 'bar', 'lorem' ]);
         $this->assertEquals("SELECT `foo`.* FROM `foo` ORDER BY `bar`, `lorem`", (string)$select);
+
+        // Test direction
+        $select = new Select();
+        $select->from('foo')
+            ->order('bar DESC');
+        $this->assertEquals("SELECT `foo`.* FROM `foo` ORDER BY `bar` DESC", (string)$select);
     }
 
     public function testOffsetAndLimit()
@@ -352,5 +358,23 @@ class SelectTest extends TestCase
         $this->assertArrayHasKey(':bind3', $bind);
         $this->assertEquals($bind[':bind2'], 3);
         $this->assertEquals($bind[':bind3'], 10);
+    }
+
+    public function testColumns()
+    {
+        // Test between
+        $select = new Select();
+        $select->from('foo', 'bar');
+        $select->columns('lorem');
+
+        $this->assertEquals("SELECT `foo`.`bar`, `lorem` FROM `foo`", (string)$select);
+
+        // Replace all columns
+        $select->columns('dingen', true);
+        $this->assertEquals("SELECT `dingen` FROM `foo`", (string)$select);
+
+        // Expression as a column
+        $select->columns([ 'count' => new Func('COUNT(*)') ], true);
+        $this->assertEquals("SELECT COUNT(*) AS `count` FROM `foo`", (string)$select);
     }
 }
