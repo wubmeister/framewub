@@ -5,7 +5,7 @@
  *
  * One would provide a pattern which can be matched against a string to return the matches mapped to variable names. This pattern could also be filled with variables stored in an associative array.
  *
- * @package    framewub/storage
+ * @package    framewub/util
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
  * @license    GPL

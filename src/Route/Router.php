@@ -3,7 +3,7 @@
 /**
  * Router class
  *
- * @package    framewub/storage
+ * @package    framewub/route
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
  * @license    GPL

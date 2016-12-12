@@ -9,6 +9,10 @@ function _fw_autoload($classname) {
         $path = __DIR__ . '/test/src/' . str_replace('\\', '/', substr($classname, 5)) . '.php';
         include $path;
     }
+    else if (substr($classname, 0, 17) == 'Psr\\Http\\Message\\') {
+        $path = __DIR__ . '/vendor/http-message/src/' . str_replace('\\', '/', substr($classname, 17)) . '.php';
+        include $path;
+    }
 }
 
 spl_autoload_register('_fw_autoload');

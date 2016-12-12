@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use Framewub\Util\VarExp;
 
-class FuncTest extends TestCase
+class VarExpTest extends TestCase
 {
     public function testMatch()
     {

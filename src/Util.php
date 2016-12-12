@@ -3,7 +3,7 @@
 /**
  * A class with some utility functions
  *
- * @package    framewub/storage
+ * @package    framewub
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
  * @license    GPL

@@ -3,7 +3,7 @@
 /**
  * A class that handles application logic
  *
- * @package    framewub/storage
+ * @package    framewub
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
  * @license    GPL
