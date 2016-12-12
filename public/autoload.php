@@ -1,0 +1,10 @@
+<?php
+
+function _fw_autoload($classname) {
+    if (substr($classname, 0, 9) == 'Framewub\\') {
+        $path = dirname(__DIR__) . '/src/' . str_replace('\\', '/', substr($classname, 9)) . '.php';
+        include $path;
+    }
+}
+
+spl_autoload_register('_fw_autoload');

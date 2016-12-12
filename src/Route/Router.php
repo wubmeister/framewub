@@ -18,6 +18,13 @@ namespace Framewub\Route;
 class Router extends AbstractRoute
 {
 	/**
+	 * The fallback code
+	 *
+	 * @var string
+	 */
+	protected $fallback;
+
+	/**
 	 * The constructor should take a route descriptor and a piece of code (usually a class name).
 	 *
 	 * @param string $descriptor
@@ -43,6 +50,9 @@ class Router extends AbstractRoute
 	{
 		$result = [ 'code' => null, 'params' => [], 'tail' => $url ];
 		$this->matchChildRoutes($url, $result);
+		if (!$result['code'] && $this->fallback) {
+			$result['code'] = $this->fallback;
+		}
 		return $result;
 	}
 
@@ -58,5 +68,16 @@ class Router extends AbstractRoute
 	public function build($params = [])
 	{
 		return '';
+	}
+
+	/**
+	 * Sets the code to fall back on if match() doesn't find any matches
+	 *
+	 * @param mixed $code
+	 *   The code
+	 */
+	public function setFallback($code)
+	{
+		$this->fallback = $code;
 	}
 }
