@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Storage\Query\Func;
+use Framewub\Db\Query\Func;
 
 class FuncTest extends TestCase
 {

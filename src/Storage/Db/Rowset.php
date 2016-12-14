@@ -16,7 +16,7 @@ use PDO;
 use PDOStatement;
 use Iterator;
 use Framewub\Storage\StorageObject;
-use Framewub\Storage\Query\Func;
+use Framewub\Db\Query\Func;
 
 /**
  * Abstract database storage class

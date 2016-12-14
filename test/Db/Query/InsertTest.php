@@ -2,15 +2,23 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Storage\Query\Insert;
-use Framewub\Storage\Query\Func;
+use Framewub\Db\MySQL;
+use Framewub\Db\Query\Insert;
+use Framewub\Db\Query\Func;
 
 class UpdateTest extends TestCase
 {
+    protected $db;
+
+    protected function setUp()
+    {
+        $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
+    }
+
     public function testTable()
     {
         // Create object
-        $insert = new Insert();
+        $insert = new Insert($this->db);
 
         // Add 'table' clause
         $result = $insert->into('foo');
@@ -24,7 +32,7 @@ class UpdateTest extends TestCase
     public function testValues()
     {
         // Create object
-        $insert = new Insert();
+        $insert = new Insert($this->db);
 
         // Add 'table' clause
         $result = $insert->into('foo')
@@ -45,7 +53,7 @@ class UpdateTest extends TestCase
     public function testIgnore()
     {
         // Create object
-        $insert = new Insert();
+        $insert = new Insert($this->db);
 
         // Add 'table' clause
         $result = $insert->into('foo')
@@ -74,7 +82,7 @@ class UpdateTest extends TestCase
     public function testOnDuplicateKeyUpdate()
     {
         // Create object
-        $insert = new Insert();
+        $insert = new Insert($this->db);
 
         // Add 'table' clause
         $result = $insert->into('foo')

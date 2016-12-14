@@ -3,14 +3,14 @@
 /**
  * Helper to construct UPDATE queries for SQL
  *
- * @package    framewub/storage
+ * @package    framewub/db
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
  * @license    GPL
  * @link       https://github.com/wubmeister/framewub
  */
 
-namespace Framewub\Storage\Query;
+namespace Framewub\Db\Query;
 
 /**
  * Update query builder
@@ -25,7 +25,7 @@ class Update extends AbstractQuery
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function table($table)

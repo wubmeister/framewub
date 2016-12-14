@@ -3,14 +3,14 @@
 /**
  * Helper to construct SELECT queries for SQL
  *
- * @package    framewub/storage
+ * @package    framewub/db
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
  * @license    GPL
  * @link       https://github.com/wubmeister/framewub
  */
 
-namespace Framewub\Storage\Query;
+namespace Framewub\Db\Query;
 
 /**
  * Select query builder
@@ -74,7 +74,7 @@ class Select extends AbstractQuery
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function from($table, $columns = '*')
@@ -92,7 +92,7 @@ class Select extends AbstractQuery
      * @param bool $replaceAll
      *   OPTIONAL. If true, this will replace all existing columns in the query with the specified ones. Defaults to false.
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function columns($columns, $replaceAll = false)
@@ -118,13 +118,14 @@ class Select extends AbstractQuery
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
-    public function join($table, $condition, $columns = '*')
+    public function join($table, $condition, $columns = '*', $method = null)
     {
-        $condition = "`" . preg_replace('/\s*=\s*/', '` = `', str_replace('.', '`.`', $condition)) . "`";
-        $join = "JOIN " . $this->tableStr($table, $columns) . " ON {$condition}";
+        $pair = preg_split('/\s*=\s*/', $condition);
+        $condition = $this->db->quoteIdentifier($pair[0]) . ' = ' . $this->db->quoteIdentifier($pair[1]);
+        $join = ($method ? $method . " " : "") . "JOIN " . $this->tableStr($table, $columns) . " ON {$condition}";
         $this->joins[] = $join;
 
         return $this;
@@ -140,16 +141,12 @@ class Select extends AbstractQuery
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function joinLeft($table, $condition, $columns = '*')
     {
-        $condition = "`" . preg_replace('/\s*=\s*/', '` = `', str_replace('.', '`.`', $condition)) . "`";
-        $join = "LEFT JOIN " . $this->tableStr($table, $columns) . " ON {$condition}";
-        $this->joins[] = $join;
-
-        return $this;
+        return $this->join($table, $condition, $columns, "LEFT");
     }
 
     /**
@@ -162,16 +159,12 @@ class Select extends AbstractQuery
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function joinRight($table, $condition, $columns = '*')
     {
-        $condition = "`" . preg_replace('/\s*=\s*/', '` = `', str_replace('.', '`.`', $condition)) . "`";
-        $join = "RIGHT JOIN " . $this->tableStr($table, $columns) . " ON {$condition}";
-        $this->joins[] = $join;
-
-        return $this;
+        return $this->join($table, $condition, $columns, "RIGHT");
     }
 
     /**
@@ -180,11 +173,15 @@ class Select extends AbstractQuery
      * @param string|array $group
      *   One or multiple columns to group by
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function group($group) {
-        $this->groupBy = is_array($group) ? "`" . implode("`, `", $group) . "`" : "`{$group}`";
+        if (!is_array($group)) {
+            $group = [ $group ];
+        }
+        $group = array_map([ $this->db, 'quoteIdentifier' ], $group);
+        $this->groupBy = implode(", ", $group);
 
         return $this;
     }
@@ -195,15 +192,19 @@ class Select extends AbstractQuery
      * @param string|array $order
      *   One or multiple columns to order by
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function order($order) {
         if (!is_array($order)) {
             $order = [ $order ];
         }
-        $order = array_map(function ($o) { $p = explode(' ', $o, 2); return "`{$p[0]}`" . (count($p) == 2 ? " {$p[1]}" : ""); }, $order);
-        $this->orderBy = implode(", ", $order);
+        $ord = [];
+        foreach ($order as $o) {
+            $p = explode(' ', $o, 2);
+            $ord[] = $this->db->quoteIdentifier($p[0]) . (count($p) == 2 ? " {$p[1]}" : "");
+        }
+        $this->orderBy = implode(", ", $ord);
 
         return $this;
     }
@@ -214,7 +215,7 @@ class Select extends AbstractQuery
      * @param int $offset
      *   The offset
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function offset($offset) {
@@ -229,7 +230,7 @@ class Select extends AbstractQuery
      * @param int $limit
      *   The limit
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function limit($limit) {
@@ -244,7 +245,7 @@ class Select extends AbstractQuery
      * @param array $conditions
      *   The conditions to add
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function having($conditions)
@@ -263,7 +264,7 @@ class Select extends AbstractQuery
      * @param array $conditions
      *   The conditions to add
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function orHaving($conditions)

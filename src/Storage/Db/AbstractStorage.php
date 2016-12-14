@@ -13,12 +13,13 @@
 namespace Framewub\Storage\Db;
 
 use PDO;
+use Framewub\Db\Generic as GenericDb;
 use Framewub\Storage\StorageInterface;
-use Framewub\Storage\Query\AbstractQuery;
-use Framewub\Storage\Query\Select;
-use Framewub\Storage\Query\Insert;
-use Framewub\Storage\Query\Update;
-use Framewub\Storage\Query\Delete;
+use Framewub\Db\Query\AbstractQuery;
+use Framewub\Db\Query\Select;
+use Framewub\Db\Query\Insert;
+use Framewub\Db\Query\Update;
+use Framewub\Db\Query\Delete;
 
 /**
  * Abstract database storage class
@@ -40,21 +41,21 @@ class AbstractStorage implements StorageInterface
     protected $objectClass;
 
     /**
-     * The PDO adapter
+     * The database adapter
      *
-     * @var PDO
+     * @var Framewub\Db\Generic
      */
-    protected $pdo;
+    protected $db;
 
-    public function __construct($pdo)
+    public function __construct(GenericDb $db)
     {
-        $this->pdo = $pdo;
+        $this->db = $db;
     }
 
     /**
      * Prepares a PDO statement with bind values
      *
-     * @param Framewub\Storage\Query\AbstractQuery $query
+     * @param Framewub\Db\Query\AbstractQuery $query
      *   The SQL query
      *
      * @return PDOStatement
@@ -62,11 +63,7 @@ class AbstractStorage implements StorageInterface
      */
     protected function prepare(AbstractQuery $query)
     {
-        $statement = $this->pdo->prepare((string)$query);
-        $params = $query->getBind();
-        foreach ($params as $key => $value) {
-            $statement->bindValue($key, $value);
-        }
+        $statement = $this->db->prepare($query, $query->getBind());
 
         return $statement;
     }
@@ -81,7 +78,7 @@ class AbstractStorage implements StorageInterface
      */
     public function find($where = null, $order = null)
     {
-        $select = new Select();
+        $select = new Select($this->db);
         $select->from($this->tableName);
 
         if ($where) {
@@ -106,7 +103,7 @@ class AbstractStorage implements StorageInterface
      */
     public function findOne($idOrWhere = null)
     {
-        $select = new Select();
+        $select = new Select($this->db);
         $select->from($this->tableName);
 
         if (is_array($idOrWhere)) {
@@ -133,14 +130,14 @@ class AbstractStorage implements StorageInterface
      */
     public function insert(array $values)
     {
-        $insert = new Insert();
+        $insert = new Insert($this->db);
         $insert->into($this->tableName)->values($values);
 
         $statement = $this->prepare($insert);
 
         $id = null;
         if ($statement->execute()) {
-            $id = $this->pdo->lastInsertId();
+            $id = $this->db->getPdo()->lastInsertId();
         }
 
         return $id;
@@ -149,7 +146,7 @@ class AbstractStorage implements StorageInterface
     /**
      * Performs a DELETE or UPDATE, based on the passed argument, and returns the number of affected rows
      *
-     * @param Framewub\Storage\Query\AbstractQuery $query
+     * @param Framewub\Db\Query\AbstractQuery $query
      *   The Delete or Update query
      * @param int|string|array
      *   An ID or a set of conditions for the update query. If nothing is specified, all rows in the table will be updated.
@@ -190,7 +187,7 @@ class AbstractStorage implements StorageInterface
      */
     public function update(array $values, $idOrWhere = null)
     {
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table($this->tableName)->values($values);
 
         return $this->deleteOrUpdate($update, $idOrWhere);
@@ -207,7 +204,7 @@ class AbstractStorage implements StorageInterface
      */
     public function delete($idOrWhere = null)
     {
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from($this->tableName);
 
         return $this->deleteOrUpdate($delete, $idOrWhere);
@@ -242,6 +239,6 @@ class AbstractStorage implements StorageInterface
      */
     public function getPdo()
     {
-        return $this->pdo;
+        return $this->db->getPdo();
     }
 }

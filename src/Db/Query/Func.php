@@ -4,14 +4,14 @@
  * A literal function or expression for SQL queries. This is a wrapper for strings which
  * should not be encapsulated in quotes.
  *
- * @package    framewub/storage
+ * @package    framewub/db
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
  * @license    GPL
  * @link       https://github.com/wubmeister/framewub
  */
 
-namespace Framewub\Storage\Query;
+namespace Framewub\Db\Query;
 
 /**
  * Literal function or expression wrapper

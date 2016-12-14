@@ -3,14 +3,14 @@
 /**
  * Helper to construct INSERT queries for SQL
  *
- * @package    framewub/storage
+ * @package    framewub/db
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
  * @license    GPL
  * @link       https://github.com/wubmeister/framewub
  */
 
-namespace Framewub\Storage\Query;
+namespace Framewub\Db\Query;
 
 /**
  * Insert query builder
@@ -50,7 +50,7 @@ class Insert extends AbstractQuery
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function into($table)
@@ -66,7 +66,7 @@ class Insert extends AbstractQuery
      * @param bool $ignore
      *   OPTIONAL. The ignore flag. Defaults to true. Provide false to cancel ignoring.
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function ignore($ignore = true)
@@ -82,7 +82,7 @@ class Insert extends AbstractQuery
      * @param int $action
      *   One of the class constants: EXCEPTION, IGNORE, UPDATE. Default behaviour is to throw an exception
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function onDuplicateKey($action, $columns = null)

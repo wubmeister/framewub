@@ -2,15 +2,23 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Storage\Query\Update;
-use Framewub\Storage\Query\Func;
+use Framewub\Db\MySQL;
+use Framewub\Db\Query\Update;
+use Framewub\Db\Query\Func;
 
 class UpdateTest extends TestCase
 {
+    protected $db;
+
+    protected function setUp()
+    {
+        $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
+    }
+
     public function testTable()
     {
         // Create object
-        $update = new Update();
+        $update = new Update($this->db);
 
         // Add 'table' clause
         $result = $update->table('foo');
@@ -24,7 +32,7 @@ class UpdateTest extends TestCase
     public function testValues()
     {
         // Create object
-        $update = new Update();
+        $update = new Update($this->db);
 
         // Add 'table' clause
         $result = $update->table('foo')
@@ -48,7 +56,7 @@ class UpdateTest extends TestCase
     public function testWhere()
     {
         // Create object
-        $update = new Update();
+        $update = new Update($this->db);
 
         // Add 'from' clause
         $update->table('foo');
@@ -65,62 +73,62 @@ class UpdateTest extends TestCase
         $this->assertEquals($bind[':bind1'], 1);
 
         // Test 'OR'
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'id' => 1 ])
             ->orWhere([ 'id' => 3, 'foo' => 'bar' ]);
         $this->assertEquals("UPDATE `foo` WHERE (`id` = :bind1) OR (`id` = :bind2) OR (`foo` = :bind3)", (string)$update);
 
         // Test greater than
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'id' => [ '$gt' => 3 ] ]);
         $this->assertEquals("UPDATE `foo` WHERE (`id` > :bind1)", (string)$update);
 
         // Test greater than or equal
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'id' => [ '$gte' => 3 ] ]);
         $this->assertEquals("UPDATE `foo` WHERE (`id` >= :bind1)", (string)$update);
 
         // Test less than
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'id' => [ '$lt' => 3 ] ]);
         $this->assertEquals("UPDATE `foo` WHERE (`id` < :bind1)", (string)$update);
 
         // Test less than or equal
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'id' => [ '$lte' => 3 ] ]);
         $this->assertEquals("UPDATE `foo` WHERE (`id` <= :bind1)", (string)$update);
 
         // Test less not equal
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'id' => [ '$ne' => 3 ] ]);
         $this->assertEquals("UPDATE `foo` WHERE (`id` <> :bind1)", (string)$update);
 
         // Test IS NULL
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'id' => null ]);
         $this->assertEquals("UPDATE `foo` WHERE (`id` IS NULL)", (string)$update);
 
         // Test IS NOT NULL
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'id' => [ '$ne' => null ] ]);
         $this->assertEquals("UPDATE `foo` WHERE (`id` IS NOT NULL)", (string)$update);
 
         // Test literal expression
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'created' => new Func("NOW()") ]);
         $this->assertEquals("UPDATE `foo` WHERE (`created` = NOW())", (string)$update);
 
         // Test between
-        $update = new Update();
+        $update = new Update($this->db);
         $update->table('foo')
             ->where([ 'id' => [ '$between' => [ 3, 10 ] ] ]);
         $this->assertEquals("UPDATE `foo` WHERE (`id` BETWEEN :bind1 AND :bind2)", (string)$update);
@@ -135,7 +143,7 @@ class UpdateTest extends TestCase
     public function testNestedWhere()
     {
         // Create object
-        $update = new Update();
+        $update = new Update($this->db);
 
         // Add 'from' clause
         $update->table('foo');

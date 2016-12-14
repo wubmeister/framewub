@@ -2,10 +2,10 @@
 
 use PHPUnit\Framework\TestCase;
 
+use Framewub\Db\MySQL;
 use Framewub\Storage\StorageObject;
 use Framewub\Storage\Db\Rowset;
 use Framewub\Storage\Db\AbstractStorage;
-// use Framewub\Storage\Query\Select;
 
 class MockStorage extends AbstractStorage
 {
@@ -28,10 +28,12 @@ class MockStorageObject extends StorageObject
 class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 {
     private $sharedPdo;
+    private $db;
 
     public function __construct()
     {
-        $this->sharedPdo = new PDO('mysql:host=127.0.0.1;dbname=framewub_test', 'framewub', 'fr4m3wu8');
+        $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
+        $this->sharedPdo = $this->db->getPdo();
     }
 
     /**
@@ -52,13 +54,13 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testConstruct()
     {
-        $storage = new MockStorage($this->sharedPdo);
+        $storage = new MockStorage($this->db);
         $storage->setTableName('tests');
     }
 
     public function testFind()
     {
-        $storage = new MockStorage($this->sharedPdo);
+        $storage = new MockStorage($this->db);
         $storage->setTableName('tests');
 
         // Find all
@@ -91,7 +93,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindOne()
     {
-        $storage = new MockStorage($this->sharedPdo);
+        $storage = new MockStorage($this->db);
         $storage->setTableName('tests');
 
         // Find one by ID
@@ -109,7 +111,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testInsert()
     {
-        $storage = new MockStorage($this->sharedPdo);
+        $storage = new MockStorage($this->db);
         $storage->setTableName('tests');
 
         $now = date('Y-m-d H:i:s');
@@ -127,7 +129,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testUpdate()
     {
-        $storage = new MockStorage($this->sharedPdo);
+        $storage = new MockStorage($this->db);
         $storage->setTableName('tests');
 
         $now = date('Y-m-d H:i:s');
@@ -158,7 +160,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testDelete()
     {
-        $storage = new MockStorage($this->sharedPdo);
+        $storage = new MockStorage($this->db);
         $storage->setTableName('tests');
 
         // Delete by ID
@@ -182,7 +184,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testSave()
     {
-        $storage = new MockStorage($this->sharedPdo);
+        $storage = new MockStorage($this->db);
         $storage->setTableName('tests');
 
         $now = date('Y-m-d H:i:s');
@@ -207,7 +209,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testSetObjectClass()
     {
-        $storage = new MockStorage($this->sharedPdo);
+        $storage = new MockStorage($this->db);
         $storage->setTableName('tests');
         $storage->setObjectClass(MockStorageObject::class);
 

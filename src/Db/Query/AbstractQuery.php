@@ -3,14 +3,16 @@
 /**
  * Abstract query class
  *
- * @package    framewub/storage
+ * @package    framewub/db
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
  * @copyright  Copyright (c) Wubbo Bos
  * @license    GPL
  * @link       https://github.com/wubmeister/framewub
  */
 
-namespace Framewub\Storage\Query;
+namespace Framewub\Db\Query;
+
+use Framewub\Db\Generic as GenericDb;
 
 /**
  * Literal function or expression wrapper
@@ -53,6 +55,24 @@ class AbstractQuery
     protected $valueKeys = [];
 
     /**
+     * The database adapter, which is user for quoting identifiers and such
+     *
+     * @var Framewub\Db\Generic
+     */
+    protected $db;
+
+    /**
+     * Construct a Query object with a database adapter, which is user for quoting identifiers and such
+     *
+     * @param Framewub\Db\Generic $db
+     *   The database adapter
+     */
+    public function __construct(GenericDb $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
      * Generates an qualified (aliased) table name and adds the columns to the query if needed
      *
      * @param string|array $table
@@ -60,18 +80,18 @@ class AbstractQuery
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     protected function tableStr($table, $columns = '*')
     {
         if (is_array($table)) {
             foreach ($table as $alias => $name) {
-                $qualifiedName = "`{$name}` AS `{$alias}`";
+                $qualifiedName = $this->db->quoteIdentifier($name) . " AS " . $this->db->quoteIdentifier($alias);
                 break;
             }
         } else {
-            $qualifiedName = "`{$table}`";
+            $qualifiedName = $this->db->quoteIdentifier($table);
             $alias = $table;
         }
 
@@ -82,13 +102,7 @@ class AbstractQuery
 
             $this->columns[$alias] = [];
 
-            foreach ($columns as $key => $column) {
-                if ($column == '*') {
-                    $this->columns[$alias][] = "`{$alias}`.*";
-                } else {
-                    $this->columns[$alias][] = "`{$alias}`.`{$column}`" . (!is_numeric($key) ? " AS `{$key}`" : "");
-                }
-            }
+            $this->addColumns($columns, $alias);
         }
 
         return $qualifiedName;
@@ -110,11 +124,14 @@ class AbstractQuery
 
         foreach ($columns as $key => $column) {
             if ($column == '*') {
-                $this->columns[$table][] = "*";
+                $this->columns[$table][] = ($table != '*' ? $this->db->quoteIdentifier($table) . '.' : '') . "*";
             } else if ($column instanceof Func) {
-                $this->columns[$table][] = (string)$column . (!is_numeric($key) ? " AS `{$key}`" : "");
+                $this->columns[$table][] = (string)$column . (!is_numeric($key) ? " AS " . $this->db->quoteIdentifier($key) : "");
             } else {
-                $this->columns[$table][] = "`{$column}`" . (!is_numeric($key) ? " AS `{$key}`" : "");
+                if ($table != '*') {
+                    $column = "{$table}.{$column}";
+                }
+                $this->columns[$table][] = $this->db->quoteIdentifier($column) . (!is_numeric($key) ? " AS " . $this->db->quoteIdentifier($key) : "");
             }
         }
     }
@@ -224,7 +241,7 @@ class AbstractQuery
                     $operand = $bindValue === null ? 'NULL' : $this->bindValue($bindValue);
                 }
 
-                $str .= "(`" . str_replace('.', '`.`', $key) . "` {$operator} {$operand})";
+                $str .= "(" . $this->db->quoteIdentifier($key) . " {$operator} {$operand})";
             }
         }
 
@@ -237,7 +254,7 @@ class AbstractQuery
      * @param array $conditions
      *   The conditions to add
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function where(array $conditions)
@@ -256,7 +273,7 @@ class AbstractQuery
      * @param array $conditions
      *   The conditions to add
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function orWhere(array $conditions)
@@ -275,7 +292,7 @@ class AbstractQuery
      * @param array $values
      *   An associative array of values
      *
-     * @return Framewub\Storage\Query\Select
+     * @return static
      *   Provides method chaining
      */
     public function values($values) {

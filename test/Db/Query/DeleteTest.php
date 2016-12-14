@@ -2,15 +2,23 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Storage\Query\Delete;
-use Framewub\Storage\Query\Func;
+use Framewub\Db\MySQL;
+use Framewub\Db\Query\Delete;
+use Framewub\Db\Query\Func;
 
 class DeleteTest extends TestCase
 {
+    protected $db;
+
+    protected function setUp()
+    {
+        $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
+    }
+
     public function testTable()
     {
         // Create object
-        $delete = new Delete();
+        $delete = new Delete($this->db);
 
         // Add 'table' clause
         $result = $delete->from('foo');
@@ -24,7 +32,7 @@ class DeleteTest extends TestCase
     public function testWhere()
     {
         // Create object
-        $delete = new Delete();
+        $delete = new Delete($this->db);
 
         // Add 'from' clause
         $delete->from('foo');
@@ -41,62 +49,62 @@ class DeleteTest extends TestCase
         $this->assertEquals($bind[':bind1'], 1);
 
         // Test 'OR'
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'id' => 1 ])
             ->orWhere([ 'id' => 3, 'foo' => 'bar' ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`id` = :bind1) OR (`id` = :bind2) OR (`foo` = :bind3)", (string)$delete);
 
         // Test greater than
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'id' => [ '$gt' => 3 ] ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`id` > :bind1)", (string)$delete);
 
         // Test greater than or equal
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'id' => [ '$gte' => 3 ] ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`id` >= :bind1)", (string)$delete);
 
         // Test less than
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'id' => [ '$lt' => 3 ] ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`id` < :bind1)", (string)$delete);
 
         // Test less than or equal
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'id' => [ '$lte' => 3 ] ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`id` <= :bind1)", (string)$delete);
 
         // Test less not equal
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'id' => [ '$ne' => 3 ] ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`id` <> :bind1)", (string)$delete);
 
         // Test IS NULL
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'id' => null ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`id` IS NULL)", (string)$delete);
 
         // Test IS NOT NULL
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'id' => [ '$ne' => null ] ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`id` IS NOT NULL)", (string)$delete);
 
         // Test literal expression
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'created' => new Func("NOW()") ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`created` = NOW())", (string)$delete);
 
         // Test between
-        $delete = new Delete();
+        $delete = new Delete($this->db);
         $delete->from('foo')
             ->where([ 'id' => [ '$between' => [ 3, 10 ] ] ]);
         $this->assertEquals("DELETE FROM `foo` WHERE (`id` BETWEEN :bind1 AND :bind2)", (string)$delete);
@@ -111,7 +119,7 @@ class DeleteTest extends TestCase
     public function testNestedWhere()
     {
         // Create object
-        $delete = new Delete();
+        $delete = new Delete($this->db);
 
         // Add 'from' clause
         $delete->from('foo');

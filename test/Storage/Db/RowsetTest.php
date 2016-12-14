@@ -2,9 +2,10 @@
 
 use PHPUnit\Framework\TestCase;
 
+use Framewub\Db\MySQL;
 use Framewub\Storage\Db\Rowset;
 use Framewub\Storage\StorageObject;
-use Framewub\Storage\Query\Select;
+use Framewub\Db\Query\Select;
 use Framewub\Storage\Db\AbstractStorage;
 
 class MockStorageObject extends StorageObject
@@ -29,11 +30,17 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
 {
     private $sharedPdo;
     private $storage;
+    private $db;
+
+    protected function setUp()
+    {
+    }
 
     public function __construct()
     {
-        $this->sharedPdo = new PDO('mysql:host=127.0.0.1;dbname=framewub_test', 'framewub', 'fr4m3wu8');
-        $this->storage = new MockStorage($this->sharedPdo);
+        $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
+        $this->sharedPdo = $this->db->getPdo();
+        $this->storage = new MockStorage($this->db);
     }
 
     /**
@@ -54,7 +61,7 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testSetObjectClass()
     {
-        $select = new Select();
+        $select = new Select($this->db);
         $select->from('tests')->order('id');
         $rowset = new Rowset($select, $this->storage);
         $rowset->setObjectClass(MockStorageObject::class);
@@ -66,7 +73,7 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFetchOne()
     {
-        $select = new Select();
+        $select = new Select($this->db);
         $select->from('tests')->order('id');
         $rowset = new Rowset($select, $this->storage);
 
@@ -87,7 +94,7 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFetchAll()
     {
-        $select = new Select();
+        $select = new Select($this->db);
         $select->from('tests')->order('id');
         $rowset = new Rowset($select, $this->storage);
 
@@ -115,7 +122,7 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testCount()
     {
-        $select = new Select();
+        $select = new Select($this->db);
         $select->from('tests')->order('id');
         $rowset = new Rowset($select, $this->storage);
 
@@ -130,7 +137,7 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testIterate()
     {
-        $select = new Select();
+        $select = new Select($this->db);
         $select->from('tests')->order('id');
         $rowset = new Rowset($select, $this->storage);
 
