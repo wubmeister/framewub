@@ -16,3 +16,17 @@ function _fw_autoload($classname) {
 }
 
 spl_autoload_register('_fw_autoload');
+
+if (!function_exists('getallheaders')) {
+    function getallheaders()
+    {
+        return [
+            'Referer' => 'http://example.com',
+            'Upgrade-Insecure-Requests' => '1',
+            'Host' => 'example.com',
+            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language' => 'nl,en-US;q=0.7,en;q=0.3',
+            'Connection' => 'keep-alive'
+        ];
+    }
+}
