@@ -12,96 +12,128 @@
 
 namespace Framewub\Http\Message;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
+
 /**
  * Client-side request
  */
-class Request
+class Request extends Message implements RequestInterface
 {
-	/**
-	 * The protocol version
-	 *
-	 * @var string
-	 */
-	protected $protocolVersion = '1.1';
-
-	/**
-	 * The headers
-	 *
-	 * @var array
-	 */
-	protected $headers = [];
+    /**
+     * The request target
+     *
+     * @var string
+     */
+    protected $requestTarget = '/';
 
     /**
-     * Retrieves the HTTP protocol version as a string.
+     * The request method
+     *
+     * @var string
+     */
+    protected $method = 'GET';
+
+    /**
+     * The URI
+     *
+     * @var Uri
+     */
+    protected $uri;
+
+    /**
+     * Retrieves the message's request target.
      *
      * @return string
-     *   HTTP protocol version.
      */
-    public function getProtocolVersion()
+    public function getRequestTarget()
     {
-    	return $this->protocolVersion;
+        return $this->requestTarget;
     }
 
     /**
-     * Return an instance with the specified HTTP protocol version.
+     * Return an instance with the specific request-target.
      *
-     * @param string $version
-     *   HTTP protocol version
+     * @param mixed $requestTarget
      *
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withRequestTarget($requestTarget)
     {
-    	$newRequest = clone $this;
-    	$newRequest->protocolVersion = $version;
-    	return $newRequest;
+        $newRequest = clone $this;
+        $newRequest->requestTarget = $requestTarget;
+        return $newRequest;
     }
 
     /**
-     * Retrieves all message header values.
+     * Retrieves the HTTP method of the request.
      *
-     * @return string[][]
-     *  Returns an associative array of the message's headers. Each
-     *  key MUST be a header name, and each value MUST be an array of strings
-     *  for that header.
+     * @return string
+     *   Returns the request method.
      */
-    public function getHeaders()
+    public function getMethod()
     {
-    	return $this->headers;
+        return $this->method;
     }
 
     /**
-     * Retrieves a message header value by the given case-insensitive name.
+     * Return an instance with the provided HTTP method.
      *
-     * @return string[][]
-     *  Returns an associative array of the message's headers. Each
-     *  key MUST be a header name, and each value MUST be an array of strings
-     *  for that header.
-     */
-    public function getHeader()
-    {
-    	return $this->headers;
-    }
-
-    /**
-     * Return an instance with the provided value replacing the specified header.
+     * @param string $method
+     *   Case-sensitive method.
      *
-     * While header names are case-insensitive, the casing of the header will
-     * be preserved by this function, and returned from getHeaders().
-     *
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * new and/or updated header and value.
-     *
-     * @param string $name Case-insensitive header field name.
-     * @param string|string[] $value Header value(s).
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
+     * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function withHeader($name, $value)
+    public function withMethod($method)
     {
-    	$newRequest = clone $this;
-    	$newRequest->headers[$name] = $value;
-    	return $newRequest;
+        $method = strtoupper($method);
+        if (!in_array($method, [ 'GET', 'POST', 'DELETE', 'PUT', 'OPTIONS' ])) {
+            throw new InvalidArgumentException("{$method} is not a valid HTTP method");
+        }
+
+        $newRequest = clone $this;
+        $newRequest->method = $method;
+
+        return $newRequest;
+    }
+
+    /**
+     * Retrieves the URI instance.
+     *
+     * This method MUST return a UriInterface instance.
+     *
+     * @return UriInterface
+     *  Returns a UriInterface instance representing the URI of the request.
+     */
+    public function getUri()
+    {
+        if (!$this->uri) {
+            $this->uri = new Uri('/');
+        }
+        return $this->uri;
+    }
+
+    /**
+     * Returns an instance with the provided URI.
+     *
+     * @param UriInterface $uri
+     *   New request URI to use.
+     * @param bool $preserveHost
+     *   Preserve the original state of the Host header.
+     *
+     * @return static
+     */
+    public function withUri(UriInterface $uri, $preserveHost = false)
+    {
+        $host = $uri->getHost();
+        if ($host && !$preserveHost) {
+            $newRequest = $this->withHeader('Host', $host);
+        } else {
+            $newRequest = clone $this;
+        }
+        $newRequest->uri = $uri;
+
+        return $newRequest;
     }
 }
