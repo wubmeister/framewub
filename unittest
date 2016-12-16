@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$1" == "" ]; then
+    echo "Usage: unittest [classname]"
+    echo "  Where [classname] is the path to the unit, but without the 'Test.php' suffix"
+else
+	php7 `which phpunit` --bootstrap autoload.php test/$1Test.php
+fi
