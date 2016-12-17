@@ -1,0 +1,44 @@
+#!/usr/bin/env php
+<?php
+
+$dbTest = false;
+$className = '';
+
+$params = [];
+$key = '';
+
+foreach ($argv as $i => $arg) {
+    if ($i > 0) {
+
+        if ($arg[0] == '-') {
+            $key = substr($arg, 1);
+        } else if ($key) {
+            $params[$key] = $arg;
+            $key = '';
+        } else {
+            $className = $arg;
+        }
+    }
+}
+
+if (empty($className)) {
+    echo "Usage: mkclass [-d \"Description\"] [-p package] classname" . PHP_EOL;
+} else {
+    $pathToFile = 'src/' . $className . '.php';
+    $chunks = explode('/', $className);
+    $simpleClassName = array_pop($chunks);
+    $namespace = implode('\\', $chunks);
+
+    if (!isset($params['d'])) {
+        $params['d'] = str_replace('/', '\\', $className);
+    }
+    $package = 'framewub' . (isset($params['p']) ? '/' . $params['p'] : '');
+
+    $php = "<?php\n\n" .
+        "/**\n * {$params['d']}\n *\n * @package    {$package}\n * @author     Wubbo Bos <wubbo@wubbobos.nl>\n * @copyright  Copyright (c) Wubbo Bos\n * @license    GPL\n * @link       https://github.com/wubmeister/framewub\n */\n\n" .
+        "namespace Framewub\\{$namespace};\n\n" .
+        "class {$simpleClassName}\n{\n}\n";
+
+    file_put_contents($pathToFile, $php);
+
+}

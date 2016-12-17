@@ -229,7 +229,7 @@ class Message implements MessageInterface
     public function getBody()
     {
         if (!$this->body) {
-            $this->body = new Stream();
+            $this->body = new AbstractStream();
         }
         return $this->body;
     }

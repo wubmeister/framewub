@@ -2,9 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Http\Message\Stream;
+use Framewub\Http\Message\AbstractStream;
 
-class MockStream extends Stream
+class MockStream extends AbstractStream
 {
     public function __construct()
     {
@@ -13,7 +13,7 @@ class MockStream extends Stream
     }
 }
 
-class StreamInterfaceTest extends TestCase
+class StreamTest extends TestCase
 {
     public function testToString()
     {

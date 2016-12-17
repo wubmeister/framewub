@@ -15,7 +15,7 @@ namespace Framewub\Http\Message;
 use RuntimeException;
 use Psr\Http\Message\StreamInterface;
 
-class Stream implements StreamInterface
+class AbstractStream implements StreamInterface
 {
     /**
      * The file name
@@ -30,6 +30,21 @@ class Stream implements StreamInterface
      * @var int
      */
     protected $file;
+
+    /**
+     * Readable flag
+     *
+     * @var bool
+     */
+    protected $readable = true;
+
+
+    /**
+     * Writable flag
+     *
+     * @var bool
+     */
+    protected $writable = false;
 
     /**
      * Constructor opens the file for reading
@@ -157,7 +172,7 @@ class Stream implements StreamInterface
      */
     public function isWritable()
     {
-        return false;
+        return $this->writable;
     }
 
     /**
@@ -173,7 +188,10 @@ class Stream implements StreamInterface
      */
     public function write($string)
     {
-        throw new RuntimeException("Stream is not writable");
+        if (!$this->writable) {
+            throw new RuntimeException("Stream is not writable");
+        }
+        return fwrite($this->file, $string);
     }
 
     /**
@@ -183,7 +201,7 @@ class Stream implements StreamInterface
      */
     public function isReadable()
     {
-        return true;
+        return $this->readable;
     }
 
     /**
@@ -202,6 +220,10 @@ class Stream implements StreamInterface
      */
     public function read($length)
     {
+        if (!$this->readable) {
+            throw new RuntimeException("Stream is not readable");
+        }
+
         $result = @fread($this->file, $length);
         if ($result === FALSE) {
             throw new RuntimeException("Stream is not readable");
