@@ -16,7 +16,9 @@ class PHPOutputStreamTest extends TestCase
     public function testWrite()
     {
         $output = new PHPOutputStream();
+        ob_start();
         $output->write("Hello world");
+        ob_end_clean();
         $this->assertEquals("Hello world", $output->getMockContents());
         $output->close();
     }

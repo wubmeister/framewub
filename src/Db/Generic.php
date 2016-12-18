@@ -73,7 +73,8 @@ class Generic
 	 * Quotes an identifier for safe use in SQL queries
 	 *
 	 * @param string $identifier
-	 *   An unquoted identifier. Passing an already quoted identifier may lead to unexpected results!
+	 *   An unquoted identifier. Passing an already quoted identifier may lead
+	 *   to unexpected results!
 	 *
 	 * @return string
 	 *   The quoted identifier
@@ -108,7 +109,8 @@ class Generic
 	}
 
 	/**
-	 * Prepares and executes a PDO statement and binds value parameters if any are specified
+	 * Prepares and executes a PDO statement and binds value parameters if any
+	 * are specified
 	 *
 	 * @param string $query
 	 *   The SQL query

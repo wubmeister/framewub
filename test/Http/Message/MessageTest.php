@@ -3,10 +3,10 @@
 use PHPUnit\Framework\TestCase;
 
 use Framewub\Http\Message\Message;
-use Framewub\Http\Message\Stream;
+use Framewub\Http\Message\AbstractStream;
 use Psr\Http\Message\StreamInterface;
 
-class RequestTest extends TestCase
+class MessageTest extends TestCase
 {
     public function testConstruct() {
         $request = new Message();
@@ -54,7 +54,7 @@ class RequestTest extends TestCase
         $body = $request->getBody();
         $this->assertInstanceOf(StreamInterface::class, $body);
 
-        $stream = new Stream();
+        $stream = new AbstractStream();
         $request2 = $request->withBody($stream);
         $this->assertEquals($stream, $request->getBody());
     }

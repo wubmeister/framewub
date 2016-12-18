@@ -140,11 +140,11 @@ class AbstractStream implements StreamInterface
      * @param int $offset
      *   Stream offset
      * @param int $whence
-     *   Specifies how the cursor position will be calculated
-     *   based on the seek offset. Valid values are identical to the built-in
-     *   PHP $whence values for `fseek()`.  SEEK_SET: Set position equal to
-     *   offset bytes SEEK_CUR: Set position to current location plus offset
-     *   SEEK_END: Set position to end-of-stream plus offset.
+     *   Specifies how the cursor position will be calculated based on the seek
+     *   offset. Valid values are identical to the built-in PHP $whence values
+     *   for `fseek()`.  SEEK_SET: Set position equal to offset bytes SEEK_CUR:
+     *   Set position to current location plus offset SEEK_END: Set position to
+     *   end-of-stream plus offset.
      * @throws \RuntimeException on failure.
      */
     public function seek($offset, $whence = SEEK_SET)
@@ -208,9 +208,9 @@ class AbstractStream implements StreamInterface
      * Read data from the stream.
      *
      * @param int $length
-     *   Read up to $length bytes from the object and return
-     *   them. Fewer than $length bytes may be returned if underlying stream
-     *   call returns fewer bytes.
+     *   Read up to $length bytes from the object and return them. Fewer than
+     *   $length bytes may be returned if underlying stream call returns fewer
+     *   bytes.
      *
      * @return string
      *   Returns the data read from the stream, or an empty string if no bytes
@@ -260,9 +260,9 @@ class AbstractStream implements StreamInterface
      *   Specific metadata to retrieve.
      *
      * @return array|mixed|null
-     *   Returns an associative array if no key is
-     *   provided. Returns a specific key value if a key is provided and the
-     *   value is found, or null if the key is not found.
+     *   Returns an associative array if no key is provided. Returns a specific
+     *   key value if a key is provided and the value is found, or null if the
+     *   key is not found.
      */
     public function getMetadata($key = null)
     {

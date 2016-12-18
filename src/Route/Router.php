@@ -25,7 +25,8 @@ class Router extends AbstractRoute
 	protected $fallback;
 
 	/**
-	 * The constructor should take a route descriptor and a piece of code (usually a class name).
+	 * The constructor should take a route descriptor and a piece of code
+	 * (usually a class name).
 	 *
 	 * @param string $descriptor
 	 *   The route descriptor (pattern, resource name, literal, etc)
@@ -44,7 +45,8 @@ class Router extends AbstractRoute
 	 *   The URL, starting with a slash ('/')
 	 *
 	 * @return array
-	 *   If the URL matches the route, it returns an array with the code, the params and rest of the URL. If the URL doesn't match, it returns null.
+	 *   If the URL matches the route, it returns an array with the code, the
+	 *   params and rest of the URL. If the URL doesn't match, it returns null.
 	 */
 	public function match($url)
 	{

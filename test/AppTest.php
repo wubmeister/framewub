@@ -26,7 +26,7 @@ class MockCodePlain
     }
 }
 
-class FuncTest extends TestCase
+class AppTest extends TestCase
 {
     public function setUp()
     {

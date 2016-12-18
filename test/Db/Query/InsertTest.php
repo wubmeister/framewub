@@ -6,7 +6,7 @@ use Framewub\Db\MySQL;
 use Framewub\Db\Query\Insert;
 use Framewub\Db\Query\Func;
 
-class UpdateTest extends TestCase
+class InsertTest extends TestCase
 {
     protected $db;
 

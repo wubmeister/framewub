@@ -94,9 +94,9 @@ class Message implements MessageInterface
      * @param string $name
      *   Case-insensitive header field name.
      * @return bool
-     *   Returns true if any header names match the given header
-     *   name using a case-insensitive string comparison. Returns false if
-     *   no matching header name is found in the message.
+     *   Returns true if any header names match the given header name using a
+     *   case-insensitive string comparison. Returns false if no matching header
+     *   name is found in the message.
      */
     public function hasHeader($name)
     {
@@ -111,9 +111,9 @@ class Message implements MessageInterface
      * @param string $name
      *   Case-insensitive header field name.
      * @return string[]
-     *   An array of string values as provided for the given
-     *   header. If the header does not appear in the message, this method
-     *   returns an empty array.
+     *   An array of string values as provided for the given header. If the
+     *   header does not appear in the message, this method returns an empty
+     *   array.
      */
     public function getHeader($name)
     {
@@ -128,9 +128,9 @@ class Message implements MessageInterface
      * @param string $name
      *  Case-insensitive header field name.
      * @return string
-     *  A string of values as provided for the given header
-     *  concatenated together using a comma. If the header does not appear in
-     *  the message, this method returns an empty string.
+     *  A string of values as provided for the given header concatenated
+     *  together using a comma. If the header does not appear in the message,
+     *  this method returns an empty string.
      */
     public function getHeaderLine($name)
     {
@@ -140,8 +140,11 @@ class Message implements MessageInterface
     /**
      * Return an instance with the provided value replacing the specified header.
      *
-     * @param string $name Case-insensitive header field name.
-     * @param string|string[] $value Header value(s).
+     * @param string $name
+     *   Case-insensitive header field name.
+     * @param string|string[] $value
+     *   Header value(s).
+     *
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
@@ -162,7 +165,8 @@ class Message implements MessageInterface
     }
 
     /**
-     * Return an instance with the specified header appended with the given value.
+     * Return an instance with the specified header appended with the given
+     * value.
      *
      * @param string $name
      *   Case-insensitive header field name to add.

@@ -160,8 +160,8 @@ class ServerRequest extends Request implements ServerRequestInterface
      * Retrieve normalized file upload data.
      *
      * @return array
-     *   An array tree of UploadedFileInterface instances; an empty
-     *   array MUST be returned if no data is present.
+     *   An array tree of UploadedFileInterface instances; an empty array MUST
+     *   be returned if no data is present.
      */
     public function getUploadedFiles()
     {
@@ -202,8 +202,8 @@ class ServerRequest extends Request implements ServerRequestInterface
      * Retrieve any parameters provided in the request body.
      *
      * @return null|array|object
-     *  The deserialized body parameters, if any.
-     *  These will typically be an array or object.
+     *   The deserialized body parameters, if any. These will typically be an
+     *   array or object.
      */
     public function getParsedBody()
     {
@@ -219,12 +219,11 @@ class ServerRequest extends Request implements ServerRequestInterface
      * Return an instance with the specified body parameters.
      *
      * @param null|array|object $data
-     *   The deserialized body data. This will
-     *   typically be in an array or object.
+     *   The deserialized body data. This will typically be in an array or object.
      *
      * @return static
      * @throws \InvalidArgumentException if an unsupported argument type is
-     *     provided.
+     *   provided.
      */
     public function withParsedBody($data)
     {

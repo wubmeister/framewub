@@ -32,7 +32,10 @@ abstract class AbstractRoute
 	protected $children = [];
 
 	/**
-	 * The constructor should take a route descriptor and a piece of code (usually a class name). Subclasses should decide for themselves what to do with the descriptor, since the abstract constructor doens't store it anywhere.
+	 * The constructor should take a route descriptor and a piece of code
+	 * (usually a class name). Subclasses should decide for themselves what to
+	 * do with the descriptor, since the abstract constructor doens't store it
+	 * anywhere.
 	 *
 	 * @param string $descriptor
 	 *   The route descriptor (pattern, resource name, literal, etc)
@@ -45,7 +48,8 @@ abstract class AbstractRoute
 	}
 
 	/**
-	 * Gets the mapped code. Subclasses can override this method to choose the code based on the matching state
+	 * Gets the mapped code. Subclasses can override this method to choose the
+	 * code based on the matching state
 	 *
 	 * @return mixed
 	 *   The mapped code
@@ -100,7 +104,8 @@ abstract class AbstractRoute
 	 *   The URL, starting with a slash ('/')
 	 *
 	 * @return array
-	 *   If the URL matches the route, it returns an array with the code, the params and rest of the URL. If the URL doesn't match, it returns null.
+	 *   If the URL matches the route, it returns an array with the code, the
+	 *   params and rest of the URL. If the URL doesn't match, it returns null.
 	 */
 	abstract public function match($url);
 

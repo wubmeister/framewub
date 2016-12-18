@@ -36,7 +36,8 @@ class Insert extends AbstractQuery
     protected $onDupKeyUpdateFlag = false;
 
     /**
-     * Columns to update 'on duplicate key'. If this is null, all provided columns will be updated
+     * Columns to update 'on duplicate key'. If this is null, all provided
+     * columns will be updated
      *
      * @var array
      */
@@ -46,7 +47,9 @@ class Insert extends AbstractQuery
      * Sets the table for this query
      *
      * @param string|array $table
-     *   Either a table name or an associative array with one element. In case of an array, the element's key should be the alias and the value the real table name.
+     *   Either a table name or an associative array with one element. In case
+     *   of an array, the element's key should be the alias and the value the
+     *   real table name.
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
@@ -64,7 +67,8 @@ class Insert extends AbstractQuery
      * Sets the 'ignore' flag for the insert
      *
      * @param bool $ignore
-     *   OPTIONAL. The ignore flag. Defaults to true. Provide false to cancel ignoring.
+     *   OPTIONAL. The ignore flag. Defaults to true. Provide false to cancel
+     *   ignoring.
      *
      * @return static
      *   Provides method chaining
@@ -80,7 +84,8 @@ class Insert extends AbstractQuery
      * Determines what to do in case of a duplicate key
      *
      * @param int $action
-     *   One of the class constants: EXCEPTION, IGNORE, UPDATE. Default behaviour is to throw an exception
+     *   One of the class constants: EXCEPTION, IGNORE, UPDATE. Default
+     *   behaviour is to throw an exception
      *
      * @return static
      *   Provides method chaining

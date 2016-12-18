@@ -1,8 +1,8 @@
 <?php
 
 /**
- * A literal function or expression for SQL queries. This is a wrapper for strings which
- * should not be encapsulated in quotes.
+ * A literal function or expression for SQL queries. This is a wrapper for
+ * strings which should not be encapsulated in quotes.
  *
  * @package    framewub/db
  * @author     Wubbo Bos <wubbo@wubbobos.nl>

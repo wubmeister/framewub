@@ -3,7 +3,9 @@
 /**
  * Utility to handle semi-regular expressions with variables.
  *
- * One would provide a pattern which can be matched against a string to return the matches mapped to variable names. This pattern could also be filled with variables stored in an associative array.
+ * One would provide a pattern which can be matched against a string to return
+ * the matches mapped to variable names. This pattern could also be filled with
+ * variables stored in an associative array.
  *
  * @package    framewub/util
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
@@ -51,9 +53,12 @@ class VarExp
      * The constructor.
      *
      * @param string $pattern
-     *   The pattern with variables. Variables can be specified with curly braces: "pattern with {variable} or {optional_variable}?"
+     *   The pattern with variables. Variables can be specified with curly
+     *   braces: "pattern with {variable} or {optional_variable}?"
      * @param bool $urlMode
-     *   OPTIONAL. Flag to enable URL mode. In URL mode, slashes before a variable will be included in the regular expression subpatterns, so that optional URL parts can be matched properly.
+     *   OPTIONAL. Flag to enable URL mode. In URL mode, slashes before a
+     *   variable will be included in the regular expression subpatterns, so
+     *   that optional URL parts can be matched properly.
      */
     public function __construct($pattern, $urlMode = false)
     {
@@ -94,7 +99,8 @@ class VarExp
     }
 
     /**
-     * Matches a string against a regular expression. If there is a match, all matches will be mapped to the specified variable names.
+     * Matches a string against a regular expression. If there is a match, all
+     * matches will be mapped to the specified variable names.
      *
      * @param string $regexp
      *   The PCRE regeular expression to match agains
@@ -103,10 +109,13 @@ class VarExp
      * @param string $string
      *   The string to match
      * @param bool $urlMode
-     *   OPTIONAL. Flag to enable URL mode. In URL mode, slashes before a variable will be included in the regular expression subpatterns, so that optional URL parts can be matched properly.
+     *   OPTIONAL. Flag to enable URL mode. In URL mode, slashes before a
+     *   variable will be included in the regular expression subpatterns, so
+     *   that optional URL parts can be matched properly.
      *
      * @return array
-     *   An associative array with all the matches mapped to variable names (keys of the array). The key '*' holds the entire macthed string.
+     *   An associative array with all the matches mapped to variable names
+     *   (keys of the array). The key '*' holds the entire macthed string.
      *   If no match is found, this method will return null
      */
     public static function matchPattern($regex, $params, $string, $urlMode = false)
@@ -123,13 +132,15 @@ class VarExp
     }
 
     /**
-     * Matches a string against the pattern. If there is a match, all matches will be mapped to the specified variable names.
+     * Matches a string against the pattern. If there is a match, all matches
+     * will be mapped to the specified variable names.
      *
      * @param string $string
      *   The string to match
      *
      * @return array
-     *   An associative array with all the matches mapped to variable names (keys of the array). The key '*' holds the entire macthed string.
+     *   An associative array with all the matches mapped to variable names
+     *   (keys of the array). The key '*' holds the entire macthed string.
      *   If no match is found, this method will return null
      */
     public function match($string)
@@ -138,14 +149,22 @@ class VarExp
     }
 
     /**
-     * Uses the pattern as template to fill with values. The variables (keys) present in the specified array will be replaced. Optional variables (keys) which are not present in the specified array will be omitted from the resulting string. Non-optional variables (keys) which are not present in the specified array will be left as-is, with their curly braces.
+     * Uses the pattern as template to fill with values.
+     *
+     * The variables (keys) present in the specified array will be replaced.
+     * Optional variables (keys) which are not present in the specified array
+     * will be omitted from the resulting string. Non-optional variables (keys)
+     * which are not present in the specified array will be left as-is, with
+     * their curly braces.
      *
      * @param array $pattern
      *   The pattern
      * @param array $variables
      *   Associative array of variables
      * @param bool $urlMode
-     *   OPTIONAL. Flag to enable URL mode. In URL mode, slashes before a variable will be included in the regular expression subpatterns, so that optional URL parts can be matched properly.
+     *   OPTIONAL. Flag to enable URL mode. In URL mode, slashes before a
+     *   variable will be included in the regular expression subpatterns, so
+     *   that optional URL parts can be matched properly.
      *
      * @return string
      *   The resulting string
@@ -169,7 +188,13 @@ class VarExp
     }
 
     /**
-     * Uses the pattern as template to fill with values. The variables (keys) present in the specified array will be replaced. Optional variables (keys) which are not present in the specified array will be omitted from the resulting string. Non-optional variables (keys) which are not present in the specified array will be left as-is, with their curly braces.
+     * Uses the pattern as template to fill with values.
+     *
+     * The variables (keys) present in the specified array will be replaced.
+     * Optional variables (keys) which are not present in the specified array
+     * will be omitted from the resulting string. Non-optional variables (keys)
+     * which are not present in the specified array will be left as-is, with
+     * their curly braces.
      *
      * @param array $variables
      *   Associative array of variables

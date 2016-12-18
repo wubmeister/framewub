@@ -34,7 +34,8 @@ class AbstractQuery
     protected $whereClause = '';
 
     /**
-     * The current bind paramter index. Will be increased by one each time a named bind paramter is added
+     * The current bind paramter index. Will be increased by one each time a
+     * named bind paramter is added
      *
      * @var int
      */
@@ -62,7 +63,8 @@ class AbstractQuery
     protected $db;
 
     /**
-     * Construct a Query object with a database adapter, which is user for quoting identifiers and such
+     * Construct a Query object with a database adapter, which is user for
+     * quoting identifiers and such
      *
      * @param Framewub\Db\Generic $db
      *   The database adapter
@@ -73,10 +75,13 @@ class AbstractQuery
     }
 
     /**
-     * Generates an qualified (aliased) table name and adds the columns to the query if needed
+     * Generates an qualified (aliased) table name and adds the columns to the
+     * query if needed
      *
      * @param string|array $table
-     *   Either a table name or an associative array with one element. In case of an array, the element's key should be the alias and the value the real table name.
+     *   Either a table name or an associative array with one element. In case
+     *   of an array, the element's key should be the alias and the value the
+     *   real table name.
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
@@ -114,7 +119,8 @@ class AbstractQuery
      * @param string|array $columns
      *   The column(s) to select from the table
      * @param string $table
-     *   OPTIONAL. The table the columns belong to. Specify '*' if the column's don't belong to any table. This is also the default value.
+     *   OPTIONAL. The table the columns belong to. Specify '*' if the column's
+     *   don't belong to any table. This is also the default value.
      */
     protected function addColumns($columns, $table = '*')
     {
@@ -158,7 +164,8 @@ class AbstractQuery
     }
 
     /**
-     * Binds a value to a specified parameter. Overwrites a previously bound value to that parameter if any
+     * Binds a value to a specified parameter. Overwrites a previously bound
+     * value to that parameter if any
      *
      * @param string $param
      *   The parameter name

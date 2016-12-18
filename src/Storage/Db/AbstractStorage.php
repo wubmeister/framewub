@@ -72,7 +72,8 @@ class AbstractStorage implements StorageInterface
      * Finds rows in the table matching the specified set of conditions.
      *
      * @param array $where
-     *   OPTIONAL. The conditions. If no conditions are specified, all rows in the table are fetched
+     *   OPTIONAL. The conditions. If no conditions are specified, all rows in
+     *   the table are fetched
      * @param string|array $order
      *   OPTIONAL. The order column(s)
      */
@@ -96,7 +97,8 @@ class AbstractStorage implements StorageInterface
     }
 
     /**
-     * Finds a single row in the table matching the specified ID or set of conditions.
+     * Finds a single row in the table matching the specified ID or set of
+     * conditions.
      *
      * @param int|string|array $idOrWhere
      *   An ID or set of conditions
@@ -144,12 +146,14 @@ class AbstractStorage implements StorageInterface
     }
 
     /**
-     * Performs a DELETE or UPDATE, based on the passed argument, and returns the number of affected rows
+     * Performs a DELETE or UPDATE, based on the passed argument, and returns
+     * the number of affected rows
      *
      * @param Framewub\Db\Query\AbstractQuery $query
      *   The Delete or Update query
      * @param int|string|array
-     *   An ID or a set of conditions for the update query. If nothing is specified, all rows in the table will be updated.
+     *   An ID or a set of conditions for the update query. If nothing is
+     *   specified, all rows in the table will be updated.
      *
      * @return int
      *   The number of affected rows
@@ -180,7 +184,8 @@ class AbstractStorage implements StorageInterface
      * @param array $values
      *   The values to update
      * @param int|string|array
-     *   OPTIONAL. An ID or a set of conditions for the update query. If nothing is specified, all rows in the table will be updated.
+     *   OPTIONAL. An ID or a set of conditions for the update query. If nothing
+     *   is specified, all rows in the table will be updated.
      *
      * @return int
      *   The number of affected rows
@@ -197,7 +202,8 @@ class AbstractStorage implements StorageInterface
      * Deletes a row from the table
      *
      * @param int|string|array
-     *   An ID or a set of conditions for the update query. If nothing is specified, all rows in the table will be updated.
+     *   An ID or a set of conditions for the update query. If nothing is
+     *   specified, all rows in the table will be updated.
      *
      * @return int
      *   The number of affected rows
@@ -211,7 +217,8 @@ class AbstractStorage implements StorageInterface
     }
 
     /**
-     * Inserts or updates a row in the table. If there is an ID in the values, it will try to update the row with that ID
+     * Inserts or updates a row in the table. If there is an ID in the values,
+     * it will try to update the row with that ID.
      *
      * @param array $values
      *   The values to save

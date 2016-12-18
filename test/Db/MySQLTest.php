@@ -3,7 +3,6 @@
 use PHPUnit\Framework\TestCase;
 
 use Framewub\Db\MySQL;
-use Exception;
 
 class MySQLTest extends TestCase
 {

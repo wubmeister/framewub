@@ -13,7 +13,7 @@ class MockStream extends AbstractStream
     }
 }
 
-class StreamTest extends TestCase
+class AbstractStreamTest extends TestCase
 {
     public function testToString()
     {

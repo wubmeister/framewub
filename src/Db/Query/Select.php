@@ -70,7 +70,9 @@ class Select extends AbstractQuery
      * Sets the table for this query
      *
      * @param string|array $table
-     *   Either a table name or an associative array with one element. In case of an array, the element's key should be the alias and the value the real table name.
+     *   Either a table name or an associative array with one element. In case
+     *   of an array, the element's key should be the alias and the value the
+     *   real table name.
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
      *
@@ -90,7 +92,8 @@ class Select extends AbstractQuery
      * @param string|array $columns
      *   The column(s) to select from the table
      * @param bool $replaceAll
-     *   OPTIONAL. If true, this will replace all existing columns in the query with the specified ones. Defaults to false.
+     *   OPTIONAL. If true, this will replace all existing columns in the query
+     *   with the specified ones. Defaults to false.
      *
      * @return static
      *   Provides method chaining
@@ -112,7 +115,9 @@ class Select extends AbstractQuery
      * Adds a join to this query
      *
      * @param string|array $table
-     *   Either a table name or an associative array with one element. In case of an array, the element's key should be the alias and the value the real table name.
+     *   Either a table name or an associative array with one element. In case
+     *   of an array, the element's key should be the alias and the value the
+     *   real table name.
      * @param string $condition
      *   The condition on which to join on
      * @param string|array $columns
@@ -135,7 +140,9 @@ class Select extends AbstractQuery
      * Adds a left join to this query
      *
      * @param string|array $table
-     *   Either a table name or an associative array with one element. In case of an array, the element's key should be the alias and the value the real table name.
+     *   Either a table name or an associative array with one element. In case
+     *   of an array, the element's key should be the alias and the value the
+     *   real table name.
      * @param string $condition
      *   The condition on which to join on
      * @param string|array $columns
@@ -153,7 +160,9 @@ class Select extends AbstractQuery
      * Adds a right join to this query
      *
      * @param string|array $table
-     *   Either a table name or an associative array with one element. In case of an array, the element's key should be the alias and the value the real table name.
+     *   Either a table name or an associative array with one element. In case
+     *   of an array, the element's key should be the alias and the value the
+     *   real table name.
      * @param string $condition
      *   The condition on which to join on
      * @param string|array $columns

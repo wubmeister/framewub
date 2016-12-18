@@ -7,7 +7,7 @@ use Framewub\Storage\StorageObject;
 use Framewub\Storage\Db\Rowset;
 use Framewub\Storage\Db\AbstractStorage;
 
-class MockStorage extends AbstractStorage
+class ATSMockStorage extends AbstractStorage
 {
     public function setTableName($tableName)
     {
@@ -20,7 +20,7 @@ class MockStorage extends AbstractStorage
     }
 }
 
-class MockStorageObject extends StorageObject
+class ASTMockStorageObject extends StorageObject
 {
 
 }
@@ -54,13 +54,13 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testConstruct()
     {
-        $storage = new MockStorage($this->db);
+        $storage = new ATSMockStorage($this->db);
         $storage->setTableName('tests');
     }
 
     public function testFind()
     {
-        $storage = new MockStorage($this->db);
+        $storage = new ATSMockStorage($this->db);
         $storage->setTableName('tests');
 
         // Find all
@@ -93,7 +93,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindOne()
     {
-        $storage = new MockStorage($this->db);
+        $storage = new ATSMockStorage($this->db);
         $storage->setTableName('tests');
 
         // Find one by ID
@@ -111,7 +111,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testInsert()
     {
-        $storage = new MockStorage($this->db);
+        $storage = new ATSMockStorage($this->db);
         $storage->setTableName('tests');
 
         $now = date('Y-m-d H:i:s');
@@ -129,7 +129,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testUpdate()
     {
-        $storage = new MockStorage($this->db);
+        $storage = new ATSMockStorage($this->db);
         $storage->setTableName('tests');
 
         $now = date('Y-m-d H:i:s');
@@ -160,7 +160,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testDelete()
     {
-        $storage = new MockStorage($this->db);
+        $storage = new ATSMockStorage($this->db);
         $storage->setTableName('tests');
 
         // Delete by ID
@@ -184,7 +184,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testSave()
     {
-        $storage = new MockStorage($this->db);
+        $storage = new ATSMockStorage($this->db);
         $storage->setTableName('tests');
 
         $now = date('Y-m-d H:i:s');
@@ -209,12 +209,12 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testSetObjectClass()
     {
-        $storage = new MockStorage($this->db);
+        $storage = new ATSMockStorage($this->db);
         $storage->setTableName('tests');
-        $storage->setObjectClass(MockStorageObject::class);
+        $storage->setObjectClass(ASTMockStorageObject::class);
 
         $obj = $storage->findOne(2);
         $this->assertInternalType('object', $obj);
-        $this->assertInstanceOf(MockStorageObject::class, $obj);
+        $this->assertInstanceOf(ASTMockStorageObject::class, $obj);
     }
 }

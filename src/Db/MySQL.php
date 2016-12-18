@@ -29,7 +29,8 @@ class MySQL extends Generic
 	 * Quotes an identifier for safe use in SQL queries
 	 *
 	 * @param string $identifier
-	 *   An unquoted identifier. Passing an already quoted identifier may lead to unexpected results!
+	 *   An unquoted identifier. Passing an already quoted identifier may lead
+	 *   to unexpected results!
 	 *
 	 * @return string
 	 *   The quoted identifier

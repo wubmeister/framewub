@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use Framewub\Http\Message\FileStream;
 
-class StreamTest extends TestCase
+class FileStreamTest extends TestCase
 {
     protected $inputFilename;
     protected $outputFilename;
