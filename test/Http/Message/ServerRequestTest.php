@@ -12,6 +12,8 @@ class ServerRequestTest extends TestCase
     {
         PHPInputStream::mockCliContents('{"mode":"json","foo":"bar"}');
 
+        $_SERVER['REQUEST_URI'] = '/foo/bar/path';
+
         $_POST['foo'] = 'bar';
         $_POST['lorem'] = 'ipsum';
         $_GET['dingen'] = 'zaken';
@@ -30,6 +32,13 @@ class ServerRequestTest extends TestCase
             'tmp_name' => [ dirname(dirname(__DIR__)) . '/data/uploaded_file', dirname(dirname(__DIR__)) . '/data/uploaded_file_2' ],
             'error' => [ UPLOAD_ERR_OK, UPLOAD_ERR_OK ]
         ];
+    }
+
+    public function testTargetAndUri()
+    {
+        $request = new ServerRequest();
+        $this->assertEquals('/foo/bar/path', $request->getRequestTarget());
+        $this->assertEquals('/foo/bar/path', (string)$request->getUri());
     }
 
     public function testServerParams()

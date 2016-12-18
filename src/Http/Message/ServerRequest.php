@@ -14,6 +14,7 @@ namespace Framewub\Http\Message;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use Framewub\Http\Message\Uri;
 
 /**
  * Server-side request
@@ -67,6 +68,8 @@ class ServerRequest extends Request implements ServerRequestInterface
      */
     public function __construct($attributes = null)
     {
+        $this->requestTarget = $_SERVER['REQUEST_URI'];
+        $this->uri = new Uri($this->requestTarget);
         $this->cookies = $_COOKIE;
         $this->query = $_GET;
         $this->parsedBody = $_POST;
@@ -270,6 +273,21 @@ class ServerRequest extends Request implements ServerRequestInterface
     {
         $newRequest = clone $this;
         $newRequest->attributes[$name] = $value;
+        return $newRequest;
+    }
+
+    /**
+     * Return an instance with the specified derived request attributes.
+     *
+     * @param array $attributes
+     *   The attributes.
+     *
+     * @return static
+     */
+    public function withAttributes($attributes)
+    {
+        $newRequest = clone $this;
+        $newRequest->attributes = $attributes;
         return $newRequest;
     }
 

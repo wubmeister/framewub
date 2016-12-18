@@ -13,6 +13,9 @@
 namespace Framewub;
 
 use Framewub\Route\Router;
+use Framewub\Http\Message\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * App class
@@ -28,14 +31,35 @@ class App
 
 	/**
 	 * Handles a request
+	 *
+	 * @param Psr\Http\Message\RequestInterface $request
+	 *   The request
+	 *
+	 * @return Psr\Http\Message\ResponseInterface
+	 *   The response
 	 */
-	public function handleRequest()
+	public function handleRequest(RequestInterface $request)
 	{
-		$result = $this->router->match('/');
+		$response = null;
+
+		$result = $this->router->match($request->getRequestTarget());
 		if ($result['code']) {
 			$obj = new $result['code']();
-			$obj();
+			if (is_array($result['params']) && count($result['params'])) {
+				$request = $request->withAttributes($result['params']);
+			}
+			$response = $obj($request);
 		}
+
+		if ($response) {
+			if (!($response instanceof ResponseInterface)) {
+				$response = new Response($response);
+			}
+		} else {
+			$response = new Response();
+		}
+
+		return $response;
 	}
 
 	/**
