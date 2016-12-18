@@ -81,8 +81,10 @@ class Literal extends AbstractRoute
 	 * @return string
 	 *   The built URL
 	 */
-	public function build($params = [])
+	public function build()
 	{
-		return $this->descriptor;
+		$args = func_get_args();
+		$url = $this->descriptor . $this->buildChildRoutes($args);
+		return $url;
 	}
 }

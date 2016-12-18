@@ -67,9 +67,10 @@ class Router extends AbstractRoute
 	 * @return string
 	 *   The built URL
 	 */
-	public function build($params = [])
+	public function build()
 	{
-		return '';
+		$args = func_get_args();
+		return $this->buildChildRoutes($args);
 	}
 
 	/**

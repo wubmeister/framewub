@@ -30,10 +30,15 @@ class LiteralTest extends TestCase
     public function testBuild()
     {
         $route = new Literal('/foo/bar', 'FooBar');
+        $route->addChildRoute('lorem', new Literal('/lorem/ipsum', 'LoremIpsum'));
 
         // Should not match
         $result = $route->build();
         $this->assertEquals('/foo/bar', $result);
+
+        // Should not match
+        $result = $route->build('lorem');
+        $this->assertEquals('/foo/bar/lorem/ipsum', $result);
     }
 
     public function testChildRoutes()

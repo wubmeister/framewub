@@ -27,6 +27,26 @@ class RouterTest extends TestCase
         $this->assertEquals('FooBar', $result['code']);
     }
 
+    public function testBuild()
+    {
+        $router = new Router();
+        $this->assertInstanceOf(AbstractRoute::class, $router);
+        $lipsum = new Literal('/lorem/ipsum', 'LoremIpsum');
+        $lipsum->addChildRoute('dingen', new Literal('/dingen', 'Dingen'));
+
+        $router->addChildRoute('foobar', new Literal('/foo/bar', 'FooBar'));
+        $router->addChildRoute('loremipsum', $lipsum);
+
+        $result = $router->build('foobar');
+        $this->assertEquals('/foo/bar', $result);
+
+        $result = $router->build('loremipsum');
+        $this->assertEquals('/lorem/ipsum', $result);
+
+        $result = $router->build('loremipsum', 'dingen');
+        $this->assertEquals('/lorem/ipsum/dingen', $result);
+    }
+
     public function testFallback()
     {
         $router = new Router();

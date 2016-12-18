@@ -98,6 +98,26 @@ abstract class AbstractRoute
 	}
 
 	/**
+	 * Builds the child routes. If the first element of $args is a string and an
+	 * existing key in the $children property, then that child route will be
+	 * built with the remaining arguments.
+	 *
+	 * @param array $args
+	 *   The arguments
+	 *
+	 * @return string
+	 *   The built route
+	 */
+	protected function buildChildRoutes(&$args)
+	{
+		$child = array_shift($args);
+		if (!is_array($child) && isset($this->children[$child])) {
+			return call_user_func_array([ $this->children[$child], 'build' ], $args);
+		}
+		return '';
+	}
+
+	/**
 	 * Compares the specified URL to this route to see if it matches
 	 *
 	 * @param string $url
@@ -118,5 +138,5 @@ abstract class AbstractRoute
 	 * @return string
 	 *   The built URL
 	 */
-	abstract public function build($params = []);
+	abstract public function build();
 }
