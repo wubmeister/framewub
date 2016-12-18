@@ -10,9 +10,9 @@
  * @link       https://github.com/wubmeister/framewub
  */
 
-namespace Framewub\Http\Message;
+namespace Framewub\Http\Message\Stream;
 
-class PHPOutputStream extends AbstractStream
+class PHPOutput extends AbstractStream
 {
     /**
      * Flag to check if we are in CLI mode

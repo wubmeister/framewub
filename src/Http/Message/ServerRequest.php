@@ -14,7 +14,7 @@ namespace Framewub\Http\Message;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-use Framewub\Http\Message\Uri;
+use Framewub\Http\Message\Stream\PHPInput;
 
 /**
  * Server-side request
@@ -193,7 +193,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function getBody()
     {
         if (!$this->body) {
-            $this->body = new PHPInputStream();
+            $this->body = new PHPInput();
         }
         return $this->body;
     }

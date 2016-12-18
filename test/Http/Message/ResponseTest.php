@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 use Framewub\Http\Message\Response;
-use Framewub\Http\Message\PHPOutputStream;
+use Framewub\Http\Message\Stream\PHPOutput;
 
 class ResponseTest extends TestCase
 {
@@ -61,6 +61,6 @@ class ResponseTest extends TestCase
     public function testStream()
     {
         $response = new Response();
-        $this->assertInstanceOf(PHPOutputStream::class, $response->getBody());
+        $this->assertInstanceOf(PHPOutput::class, $response->getBody());
     }
 }

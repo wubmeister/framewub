@@ -10,7 +10,7 @@
  * @link       https://github.com/wubmeister/framewub
  */
 
-namespace Framewub\Http\Message;
+namespace Framewub\Http\Message\Stream;
 
 use RuntimeException;
 use Psr\Http\Message\StreamInterface;

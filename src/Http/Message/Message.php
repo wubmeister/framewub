@@ -15,6 +15,7 @@ namespace Framewub\Http\Message;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
+use Framewub\Http\Message\Stream\AbstractStream;
 
 /**
  * HTTP message

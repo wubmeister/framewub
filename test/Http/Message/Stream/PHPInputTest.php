@@ -2,18 +2,18 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Http\Message\PHPInputStream;
+use Framewub\Http\Message\Stream\PHPInput;
 
-class PHPInputStreamTest extends TestCase
+class PHPInputTest extends TestCase
 {
     public function setUp()
     {
-        PHPInputStream::mockCliContents('foo=bar&lorem=ipsum');
+        PHPInput::mockCliContents('foo=bar&lorem=ipsum');
     }
 
     public function testMock()
     {
-        $input = new PHPInputStream();
+        $input = new PHPInput();
         $this->assertEquals('foo=bar&lorem=ipsum', (string)$input);
     }
 }

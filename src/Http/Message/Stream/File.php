@@ -10,12 +10,12 @@
  * @link       https://github.com/wubmeister/framewub
  */
 
-namespace Framewub\Http\Message;
+namespace Framewub\Http\Message\Stream;
 
 /**
  * File stream class
  */
-class FileStream extends AbstractStream
+class File extends AbstractStream
 {
     /**
      * Opens a file with the specified file name

@@ -13,6 +13,7 @@
 namespace Framewub\Http\Message;
 
 use Psr\Http\Message\UploadedFileInterface;
+use Framewub\Http\Message\Stream\File;
 
 class UploadedFile implements UploadedFileInterface
 {
@@ -74,7 +75,7 @@ class UploadedFile implements UploadedFileInterface
     /**
      * Retrieve a stream representing the uploaded file.
      *
-     * @return FileStream
+     * @return File
      *   Stream representation of the uploaded file.
      * @throws \RuntimeException in cases when no stream is available or can be
      *     created.
@@ -86,7 +87,7 @@ class UploadedFile implements UploadedFileInterface
             if ($this->movedTo) {
                 $filename = $this->movedTo;
             }
-            $this->stream = new FileStream($filename, 'r');
+            $this->stream = new File($filename, 'r');
         }
 
         return $this->stream;

@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 use Framewub\Http\Message\Request;
-use Framewub\Http\Message\AbstractStream;
+use Framewub\Http\Message\Stream\AbstractStream;
 use Framewub\Http\Message\Uri;
 use Psr\Http\Message\StreamInterface;
 

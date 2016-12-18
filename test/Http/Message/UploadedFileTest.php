@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 use Framewub\Http\Message\UploadedFile;
-use Framewub\Http\Message\FileStream;
+use Framewub\Http\Message\Stream\File;
 
 class UploadedFileTest extends TestCase
 {
@@ -48,7 +48,7 @@ class UploadedFileTest extends TestCase
     {
         $file = new UploadedFile($this->fileData);
         $stream = $file->getStream();
-        $this->assertInstanceOf(FileStream::class, $stream);
+        $this->assertInstanceOf(File::class, $stream);
         $this->assertTrue($stream->isReadable());
         $this->assertFalse($stream->isWritable());
     }

@@ -2,13 +2,13 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Http\Message\AbstractStream;
+use Framewub\Http\Message\Stream\AbstractStream;
 
 class MockStream extends AbstractStream
 {
     public function __construct()
     {
-        $this->filename = dirname(dirname(__DIR__)) . '/data/phpinput';
+        $this->filename = dirname(dirname(dirname(__DIR__))) . '/data/phpinput';
         parent::__construct();
     }
 }

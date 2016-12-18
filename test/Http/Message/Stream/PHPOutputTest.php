@@ -2,20 +2,20 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Http\Message\PHPOutputStream;
+use Framewub\Http\Message\Stream\PHPOutput;
 
-class PHPOutputStreamTest extends TestCase
+class PHPOutputTest extends TestCase
 {
     public function testWritable()
     {
-        $output = new PHPOutputStream();
+        $output = new PHPOutput();
         $this->assertTrue($output->isWritable());
         $output->close();
     }
 
     public function testWrite()
     {
-        $output = new PHPOutputStream();
+        $output = new PHPOutput();
         ob_start();
         $output->write("Hello world");
         ob_end_clean();
@@ -25,7 +25,7 @@ class PHPOutputStreamTest extends TestCase
 
     public function testEncoder()
     {
-        $output = new PHPOutputStream('json_encode');
+        $output = new PHPOutput('json_encode');
         ob_start();
         $output->write([ "content" => "Hello world" ]);
         ob_end_clean();

@@ -14,6 +14,7 @@ namespace Framewub\Http\Message;
 
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
+use Framewub\Http\Message\Stream\PHPOutput;
 
 class Response extends Message implements ResponseInterface
 {
@@ -102,13 +103,13 @@ class Response extends Message implements ResponseInterface
     /**
      * Gets the body of the message.
      *
-     * @return PHPOutputStream
+     * @return PHPOutput
      *   Returns the body as a stream.
      */
     public function getBody()
     {
         if (!$this->body) {
-            $this->body = new PHPOutputStream();
+            $this->body = new PHPOutput();
         }
         return $this->body;
     }

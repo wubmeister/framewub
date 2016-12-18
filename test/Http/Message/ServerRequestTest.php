@@ -4,13 +4,13 @@ use PHPUnit\Framework\TestCase;
 
 use Framewub\Http\Message\ServerRequest;
 use Framewub\Http\Message\UploadedFile;
-use Framewub\Http\Message\PHPInputStream;
+use Framewub\Http\Message\Stream\PHPInput;
 
 class ServerRequestTest extends TestCase
 {
     public function setUp()
     {
-        PHPInputStream::mockCliContents('{"mode":"json","foo":"bar"}');
+        PHPInput::mockCliContents('{"mode":"json","foo":"bar"}');
 
         $_SERVER['REQUEST_URI'] = '/foo/bar/path';
 

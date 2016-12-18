@@ -13,7 +13,7 @@
 namespace Framewub\Http\Message\Response;
 
 use Framewub\Http\Message\Response;
-use Framewub\Http\Message\PHPOutputStream;
+use Framewub\Http\Message\Stream\PHPOutput;
 
 class Json extends Response
 {
@@ -34,13 +34,13 @@ class Json extends Response
     /**
      * Gets the body of the message.
      *
-     * @return PHPOutputStream
+     * @return PHPOutput
      *   Returns the body as a stream.
      */
     public function getBody()
     {
         if (!$this->body) {
-            $this->body = new PHPOutputStream('json_encode');
+            $this->body = new PHPOutput('json_encode');
         }
         return $this->body;
     }

@@ -10,9 +10,9 @@
  * @link       https://github.com/wubmeister/framewub
  */
 
-namespace Framewub\Http\Message;
+namespace Framewub\Http\Message\Stream;
 
-class PHPInputStream extends AbstractStream
+class PHPInput extends AbstractStream
 {
     /**
      * String for mocking the stream contents when in CLI mode
