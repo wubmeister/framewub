@@ -22,11 +22,19 @@ class PHPOutputStream extends AbstractStream
     protected $cliMode = false;
 
     /**
+     * Function to use to encode non-string values when writing
+     *
+     * @var string
+     */
+    protected $encodeFuntion = null;
+
+    /**
      * Constructs an instance by opening the real php://input stream when in
      * server-mode, or mock it using the mock content when in CLI-mode
      */
-    public function __construct()
+    public function __construct($encodeFuntion = null)
     {
+        $this->encodeFuntion = $encodeFuntion;
         $this->writable = true;
         $this->readable = false;
 
@@ -53,6 +61,9 @@ class PHPOutputStream extends AbstractStream
      */
     public function write($string)
     {
+        if (!is_string($string) && $this->encodeFuntion) {
+            $string = call_user_func($this->encodeFuntion, $string);
+        }
         if ($this->cliMode) {
             echo $string;
         }
