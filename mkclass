@@ -39,6 +39,9 @@ if (empty($className)) {
         "namespace Framewub\\{$namespace};\n\n" .
         "class {$simpleClassName}\n{\n}\n";
 
+    if (!is_dir(dirname($pathToFile))) {
+        mkdir(dirname($pathToFile), 0777, true);
+    }
     file_put_contents($pathToFile, $php);
 
 }
