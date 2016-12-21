@@ -8,13 +8,27 @@ class ConfigTest extends TestCase
 {
     public function testFromArray()
     {
-    	$config = new Config([ 'foo' => 'bar', 'lorem' => [ 'ipsum' => 'doler', 'sit' => 'amet' ]]);
+        $config = new Config([ 'foo' => 'bar', 'lorem' => [ 'ipsum' => 'doler', 'sit' => 'amet' ]]);
 
-    	$this->assertEquals('bar', $config->foo);
-    	$this->assertEquals(null, $config->dingen);
-    	$this->assertInstanceOf(Config::class, $config->lorem);
-    	$this->assertEquals('doler', $config->lorem->ipsum);
-    	$this->assertEquals('amet', $config->lorem->sit);
+        $this->assertEquals('bar', $config->foo);
+        $this->assertEquals(null, $config->dingen);
+        $this->assertInstanceOf(Config::class, $config->lorem);
+        $this->assertEquals('doler', $config->lorem->ipsum);
+        $this->assertEquals('amet', $config->lorem->sit);
+    }
+
+    public function testMerge()
+    {
+        $config = new Config([ 'foo' => 'bar', 'lorem' => [ 'ipsum' => 'doler', 'sit' => 'amet' ]]);
+    	$config2 = new Config([ 'bar' => 'barbar', 'lorem' => [ 'ipsum' => 'doler sit amet', 'amet' => 'trens roxnas' ]]);
+
+        $config->mergeWith($config2);
+
+        $this->assertEquals('bar', $config->foo);
+    	$this->assertEquals('barbar', $config->bar);
+    	$this->assertEquals('doler sit amet', $config->lorem->ipsum);
+        $this->assertEquals('amet', $config->lorem->sit);
+    	$this->assertEquals('trens roxnas', $config->lorem->amet);
     }
 
     public function testSerialize()

@@ -43,4 +43,22 @@ class Config
 	{
 		return null;
 	}
+
+	/**
+	 * Injects another configuration into this configuration. This configuration
+	 * will be the merged version of both
+	 *
+	 * @param Config $other
+	 *   The other configuration
+	 */
+	public function mergeWith(Config $other)
+	{
+		foreach ($other as $key => $value) {
+			if (is_object($this->{$key}) && is_object($value)) {
+				$this->{$key}->mergeWith($value);
+			} else {
+				$this->{$key} = $value;
+			}
+		}
+	}
 }
