@@ -34,4 +34,15 @@ class ConfigTest extends TestCase
     	$this->assertEquals('doler', $config->lorem->ipsum);
     	$this->assertEquals('amet', $config->lorem->sit);
     }
+
+    public function testIterate()
+    {
+    	$configArray = [ 'foo' => 'bar', 'lorem' => 'ipsum' ];
+    	$config = new Config($configArray);
+
+    	foreach ($config as $key => $value)
+    	{
+    		$this->assertEquals($configArray[$key], $value);
+    	}
+    }
 }

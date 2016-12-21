@@ -12,6 +12,8 @@
 
 namespace Framewub\Route;
 
+use Framewub\Config;
+
 /**
  * Route interface
  */
@@ -88,7 +90,7 @@ abstract class AbstractRoute
 		foreach ($this->children as $child) {
 			if ($res = $child->match($url)) {
 				if (count($res['params'])) {
-					array_splice($result['params'], count($res), 0, $res['params']);
+					$result['params'] = array_merge($result['params'], $res['params']);
 				}
 				$result['code'] = $res['code'];
 				$result['tail'] = $res['tail'];
@@ -116,6 +118,31 @@ abstract class AbstractRoute
 		}
 		return '';
 	}
+
+    /**
+     * Loads routes from a configuration
+     *
+     * @param Framewub\Config $config
+     *   The configuration or router
+     */
+    public function loadConfig(Config $config)
+    {
+        foreach ($config as $key => $routeConfig) {
+            if ($key == 'fallback') {
+                $this->setFallback($routeConfig);
+            } else {
+                $className = $routeConfig->type;
+                if (strpos('\\', $className) === FALSE) {
+                    $className = 'Framewub\\Route\\' . $className;
+                }
+                $route = new $className($routeConfig->descriptor, $routeConfig->code);
+                if ($routeConfig->childRoutes) {
+                    $route->loadConfig($routeConfig->childRoutes);
+                }
+                $this->addChildRoute($key, $route);
+            }
+        }
+    }
 
 	/**
 	 * Compares the specified URL to this route to see if it matches

@@ -5,6 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Framewub\Route\AbstractRoute;
 use Framewub\Route\Router;
 use Framewub\Route\Literal;
+use Framewub\Config;
 
 class RouterTest extends TestCase
 {
@@ -60,5 +61,42 @@ class RouterTest extends TestCase
         $result = $router->match('/dingen/zaken');
         $this->assertInternalType('array', $result);
         $this->assertEquals('MyFallback', $result['code']);
+    }
+
+    public function testFromConfig()
+    {
+        $config = new Config([
+            'router' => [
+                'fallback' => 'Fallback',
+                'foobar' => [
+                    'type' => 'Literal',
+                    'descriptor' => '/foo/bar',
+                    'code' => 'FooBar'
+                ],
+                'things' => [
+                    'type' => 'Resource',
+                    'descriptor' => 'things',
+                    'code' => 'Things'
+                ]
+            ]
+        ]);
+
+        $router = Router::fromConfig($config);
+
+        // Should match
+        $result = $router->match('/foo/bar');
+        $this->assertInternalType('array', $result);
+        $this->assertEquals('FooBar', $result['code']);
+
+        // Should match
+        $result = $router->match('/things/1');
+        $this->assertInternalType('array', $result);
+        $this->assertEquals('Things', $result['code']);
+        $this->assertEquals('1', $result['params']['thing_id']);
+
+        // Should fallback
+        $result = $router->match('/lorem/ipsum');
+        $this->assertInternalType('array', $result);
+        $this->assertEquals('Fallback', $result['code']);
     }
 }

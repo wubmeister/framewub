@@ -69,7 +69,7 @@ class Resource extends AbstractRoute
     {
         if (preg_match($this->regex, $url, $match)) {
             $params = [];
-            if ($match[2]) {
+            if (count($match) > 2 && $match[2]) {
                 $params['id'] = $match[2];
                 $params[$this->idKey] = $match[2];
             }
