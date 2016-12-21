@@ -29,6 +29,12 @@ if (empty($className)) {
     $simpleClassName = array_pop($chunks);
     $namespace = implode('\\', $chunks);
 
+    if ($namespace) {
+        $namespace = "Framewub\\{$namespace}";
+    } else {
+        $namespace = "Framewub";
+    }
+
     if (!isset($params['d'])) {
         $params['d'] = str_replace('/', '\\', $className);
     }
@@ -36,7 +42,7 @@ if (empty($className)) {
 
     $php = "<?php\n\n" .
         "/**\n * {$params['d']}\n *\n * @package    {$package}\n * @author     Wubbo Bos <wubbo@wubbobos.nl>\n * @copyright  Copyright (c) Wubbo Bos\n * @license    GPL\n * @link       https://github.com/wubmeister/framewub\n */\n\n" .
-        "namespace Framewub\\{$namespace};\n\n" .
+        "namespace {$namespace};\n\n" .
         "class {$simpleClassName}\n{\n}\n";
 
     if (!is_dir(dirname($pathToFile))) {
