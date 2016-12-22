@@ -77,4 +77,15 @@ class StorageObject
 	{
 		return $this->storage->save($this->data);
 	}
+
+	/**
+	 * Converts the object into an array
+	 *
+	 * @return array
+	 *   The array
+	 */
+	public function toArray()
+	{
+		return $this->data;
+	}
 }

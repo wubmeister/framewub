@@ -134,6 +134,18 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertEquals(1, $result->id);
     }
 
+    public function testToArray()
+    {
+        $select = new Select($this->db);
+        $select->from('tests')->order('id');
+        $rowset = new Rowset($select, $this->storage);
+
+        $array = $rowset->toArray();
+        $this->assertInternalType('array', $array);
+        $this->assertEquals(3, count($array));
+        $this->assertInternalType('array', $array[0]);
+    }
+
     public function testIterate()
     {
         $select = new Select($this->db);

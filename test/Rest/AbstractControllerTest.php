@@ -6,7 +6,7 @@ use Framewub\Rest\AbstractController;
 use Framewub\Http\Message\ServerRequest;
 use Framewub\Http\Message\Response;
 
-class MockController extends AbstractController
+class ACMockController extends AbstractController
 {
     protected function findAll()
     {
@@ -61,7 +61,7 @@ class AbstractControllerTest extends TestCase
 {
     public function testFindAll()
     {
-        $controller = new MockController();
+        $controller = new ACMockController();
         ob_start();
         $response = $controller(new ServerRequest());
         ob_end_clean();
@@ -74,7 +74,7 @@ class AbstractControllerTest extends TestCase
 
     public function testFindOne()
     {
-        $controller = new MockController();
+        $controller = new ACMockController();
         ob_start();
         $response = $controller(new ServerRequest([ 'id' => 1 ]));
         ob_end_clean();
@@ -99,7 +99,7 @@ class AbstractControllerTest extends TestCase
         $_POST['name'] = "Trens roxnas et plokeing";
         $_POST['description'] = "Lucius in domus est";
 
-        $controller = new MockController();
+        $controller = new ACMockController();
         $request = new ServerRequest();
         ob_start();
         $response = $controller($request->withMethod('POST'));
@@ -116,7 +116,7 @@ class AbstractControllerTest extends TestCase
         $_POST['name'] = "Updated stuff";
         $_POST['description'] = "Lucius in domus est";
 
-        $controller = new MockController();
+        $controller = new ACMockController();
         $request = new ServerRequest([ 'id' => 3 ]);
         ob_start();
         $response = $controller($request->withMethod('PUT'));
@@ -133,7 +133,7 @@ class AbstractControllerTest extends TestCase
         $_POST['name'] = "Updated stuff";
         $_POST['description'] = "Lucius in domus est";
 
-        $controller = new MockController();
+        $controller = new ACMockController();
         $request = new ServerRequest([ 'id' => 3 ]);
         ob_start();
         $response = $controller($request->withMethod('DELETE'));

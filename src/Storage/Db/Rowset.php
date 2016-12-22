@@ -170,6 +170,22 @@ class Rowset implements Iterator
 	}
 
 	/**
+	 * Converts the entire rowset into an array
+	 *
+	 * @return array
+	 *   The array
+	 */
+	public function toArray()
+	{
+		$result = [];
+		foreach ($this as $row) {
+			$result[] = $row->toArray();
+		}
+
+		return $result;
+	}
+
+	/**
 	 * The current item
 	 *
 	 * @return

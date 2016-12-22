@@ -56,6 +56,10 @@ abstract class AbstractController
                 break;
         }
 
+        if (is_object($result) && method_exists($result, 'toArray')) {
+            $result = $result->toArray();
+        }
+
         return new JsonResponse($result);
     }
 
