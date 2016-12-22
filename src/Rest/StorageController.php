@@ -16,21 +16,47 @@ use Framewub\Http\Message\ServerRequest;
 
 abstract class StorageController extends AbstractController
 {
-	/**
-	 * The storage object to work with
-	 *
-	 * @var Framewub\Storage\Db\AbstractStorage
-	 */
-	protected $storage;
+    /**
+     * Indicates an insert action
+     */
+    const INSERT = 1;
 
-	/**
-	 * This method should return a new storage object, which te controller can
-	 * work with
-	 *
-	 * @return Framewub\Storage\Db\AbstractStorage
-	 *   The storage
-	 */
-	abstract protected function getStorage();
+    /**
+     * Indicates an update action
+     */
+    const UPDATE = 2;
+
+    /**
+     * The storage object to work with
+     *
+     * @var Framewub\Storage\Db\AbstractStorage
+     */
+    protected $storage;
+
+    /**
+     * These are the callback methods which can be implemented.
+     *
+     * @var array
+     */
+    protected static $callbackMethods = [
+        'buildIndexQuery',
+        'buildDetailQuery',
+        'beforeDelete',
+        'postprocessIndex',
+        'postprocessDetail',
+        'postprocessInsert',
+        'postprocessUpdate',
+        'postprocessDelete'
+    ];
+
+    /**
+     * This method should return a new storage object, which te controller can
+     * work with
+     *
+     * @return Framewub\Storage\Db\AbstractStorage
+     *   The storage
+     */
+    abstract protected function getStorage();
 
     /**
      * Handles a request and gives a response
@@ -43,8 +69,30 @@ abstract class StorageController extends AbstractController
      */
     public function __invoke(ServerRequest $request)
     {
-    	$this->storage = $this->getStorage();
-    	return parent::__invoke($request);
+        $this->storage = $this->getStorage();
+        return parent::__invoke($request);
+    }
+
+    /**
+     * Checks if the undefined method which is called is a known callback. If it
+     * is, this method will grecefully return true. If not, this will throw an
+     * exception
+     *
+     * @param string $name
+     *   The method name
+     * @param array $args
+     *   The arguments
+     *
+     * @return bool
+     *   Returns true if the method is a known callback
+     * @throws RuntimeException if the method is not a known callback
+     */
+    public function __call($name, $args)
+    {
+        if (!in_array($name, self::$callbackMethods)) {
+            throw new RuntimeException("Method {$name} dosn't exist");
+        }
+        return true;
     }
 
     /**
@@ -54,7 +102,11 @@ abstract class StorageController extends AbstractController
      */
     protected function findAll()
     {
-        return $this->storage->find();
+        $query = [];
+        $this->buildIndexQuery($query);
+        $result = $this->storage->find($query);
+        $this->postprocessIndex($result);
+        return $result;
     }
 
     /**
@@ -67,7 +119,11 @@ abstract class StorageController extends AbstractController
      */
     protected function findById($id)
     {
-        return $this->storage->findOne($id);
+        $query = [];
+        $this->buildDetailQuery($query);
+        $obj = $this->storage->findOne($id);
+        $this->postprocessDetail($obj);
+        return $obj;
     }
 
     /**
@@ -81,8 +137,11 @@ abstract class StorageController extends AbstractController
      */
     protected function add($values)
     {
+        $values = $this->filterValues($values, self::INSERT);
         $id = $this->storage->insert($values);
-        return $this->storage->findOne($id);
+        $obj = $this->storage->findOne($id);
+        $this->postprocessInsert($obj);
+        return $obj;
     }
 
     /**
@@ -99,8 +158,11 @@ abstract class StorageController extends AbstractController
      */
     protected function update($id, $values)
     {
+        $values = $this->filterValues($values, self::UPDATE);
         $this->storage->update($values, $id);
-        return $this->storage->findOne($id);
+        $obj = $this->storage->findOne($id);
+        $this->postprocessUpdate($obj);
+        return $obj;
     }
 
     /**
@@ -115,10 +177,14 @@ abstract class StorageController extends AbstractController
      */
     protected function delete($id)
     {
-    	$result = [ 'success' => false, 'id' => $id ];
-    	if ($this->storage->delete($id)) {
-    		$result['success'] = true;
-    	}
+        $result = [ 'success' => false, 'id' => $id ];
+        if ($this->beforeDelete()) {
+            $obj = $this->storage->findOne($id);
+            if ($obj && $this->storage->delete($id)) {
+                $result['success'] = true;
+                $this->postprocessDelete($obj);
+            }
+        }
         return $result;
     }
 }

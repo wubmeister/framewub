@@ -30,6 +30,7 @@ class SCMockStorageObject extends StorageObject
 class SCMockStorageController extends StorageController
 {
     private $db;
+    private $executedMethods = [];
 
     public function __construct($db)
     {
@@ -47,6 +48,28 @@ class SCMockStorageController extends StorageController
     public function getUsedStorage()
     {
         return $this->storage;
+    }
+
+    public function isExecuted($method)
+    {
+        return array_key_exists($method, $this->executedMethods);
+    }
+
+    public function getMethodArgs($method)
+    {
+        return array_key_exists($method, $this->executedMethods) ? $this->executedMethods[$method] : null;
+    }
+
+    public function __call($name, $args)
+    {
+        $this->executedMethods[$name] = $args;
+        return true;
+    }
+
+    public function filterValues($values, $reason)
+    {
+        $this->executedMethods['filterValues'] = [ $values, $reason ];
+        return $values;
     }
 }
 
@@ -88,6 +111,9 @@ class StorageControllerTest extends \PHPUnit_Extensions_Database_TestCase
             '[{"id":"1","name":"First test","created":"2012-12-10 16:30:00","modified":null,"recycled":null},{"id":"2","name":"Second test","created":"2014-12-10 16:30:00","modified":null,"recycled":null},{"id":"3","name":"Third test","created":"2016-12-10 16:30:00","modified":null,"recycled":null}]',
             $response->getBody()->getMockContents()
         );
+
+        $this->assertTrue($controller->isExecuted('buildIndexQuery'), 'The controller should have called "buildIndexQuery", but it didn\'t');
+        $this->assertTrue($controller->isExecuted('postprocessIndex'), 'The controller should have called "postprocessIndex", but it didn\'t');
     }
 
     public function testFindById()
@@ -100,6 +126,9 @@ class StorageControllerTest extends \PHPUnit_Extensions_Database_TestCase
             '{"id":"2","name":"Second test","created":"2014-12-10 16:30:00","modified":null,"recycled":null}',
             $response->getBody()->getMockContents()
         );
+
+        $this->assertTrue($controller->isExecuted('buildDetailQuery'), 'The controller should have called "buildDetailQuery", but it didn\'t');
+        $this->assertTrue($controller->isExecuted('postprocessDetail'), 'The controller should have called "postprocessDetail", but it didn\'t');
     }
 
     public function testAdd()
@@ -120,6 +149,11 @@ class StorageControllerTest extends \PHPUnit_Extensions_Database_TestCase
         $result = $controller->getUsedStorage()->findOne($obj['id']);
         $this->assertInstanceOf(StorageObject::class, $result);
         $this->assertEquals('Fourth test', $result->name);
+
+
+        $this->assertTrue($controller->isExecuted('filterValues'), 'The controller should have called "filterValues", but it didn\'t');
+        $this->assertEquals(StorageController::INSERT, $controller->getMethodArgs('filterValues')[1]);
+        $this->assertTrue($controller->isExecuted('postprocessInsert'), 'The controller should have called "postprocessInsert", but it didn\'t');
     }
 
     public function testUpdate()
@@ -140,6 +174,11 @@ class StorageControllerTest extends \PHPUnit_Extensions_Database_TestCase
         $result = $controller->getUsedStorage()->findOne(3);
         $this->assertInstanceOf(StorageObject::class, $result);
         $this->assertEquals('Modified test', $result->name);
+
+
+        $this->assertTrue($controller->isExecuted('filterValues'), 'The controller should have called "filterValues", but it didn\'t');
+        $this->assertEquals(StorageController::UPDATE, $controller->getMethodArgs('filterValues')[1]);
+        $this->assertTrue($controller->isExecuted('postprocessUpdate'), 'The controller should have called "postprocessUpdate", but it didn\'t');
     }
 
     public function testDelete()
@@ -156,5 +195,9 @@ class StorageControllerTest extends \PHPUnit_Extensions_Database_TestCase
 
         $result = $controller->getUsedStorage()->findOne(3);
         $this->assertFalse($result);
+
+
+        $this->assertTrue($controller->isExecuted('beforeDelete'), 'The controller should have called "beforeDelete", but it didn\'t');
+        $this->assertTrue($controller->isExecuted('postprocessDelete'), 'The controller should have called "postprocessDelete", but it didn\'t');
     }
 }
