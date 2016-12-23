@@ -12,7 +12,7 @@
 
 namespace Framewub;
 
-class ServiceFactory
+class Services
 {
     /**
      * The created services

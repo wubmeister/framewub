@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\ServiceFactory;
+use Framewub\Services;
 
 class MockService
 {
@@ -12,25 +12,25 @@ class RegMockService
 {
 }
 
-class ServiceFactoryTest extends TestCase
+class ServicesTest extends TestCase
 {
     public function testGet()
     {
-        $service = ServiceFactory::get(MockService::class);
+        $service = Services::get(MockService::class);
         $this->assertInstanceOf(MockService::class, $service);
     }
 
     public function testSingleton()
     {
-        $service = ServiceFactory::get(MockService::class);
-        $service2 = ServiceFactory::get(MockService::class);
+        $service = Services::get(MockService::class);
+        $service2 = Services::get(MockService::class);
         $this->assertTrue($service === $service2);
     }
 
     public function testRegister()
     {
-        ServiceFactory::register('Mock', function () { return new RegMockService(); });
-        $service = ServiceFactory::get('Mock');
+        Services::register('Mock', function () { return new RegMockService(); });
+        $service = Services::get('Mock');
         $this->assertInstanceOf(RegMockService::class, $service);
     }
 }
