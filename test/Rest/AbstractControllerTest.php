@@ -8,6 +8,15 @@ use Framewub\Http\Message\Response;
 
 class ACMockController extends AbstractController
 {
+    public $didCheckAuth = false;
+    public $mockAuthorize = true;
+
+    protected function isAuthorized($action)
+    {
+        $this->didCheckAuth = $action;
+        return $this->mockAuthorize;
+    }
+
     protected function findAll()
     {
         return [
@@ -70,6 +79,7 @@ class AbstractControllerTest extends TestCase
             '[{"name":"Lorem ipsum","description":"Lorem ipsum, doler sit amet"},{"name":"Foo bar","description":"This is just dome dummy data"}]',
             $response->getBody()->getMockContents()
         );
+        $this->assertEquals(AbstractController::FIND_ALL, $controller->didCheckAuth);
     }
 
     public function testFindOne()
@@ -83,6 +93,7 @@ class AbstractControllerTest extends TestCase
             '{"name":"Lorem ipsum","description":"Lorem ipsum, doler sit amet"}',
             $response->getBody()->getMockContents()
         );
+        $this->assertEquals(AbstractController::FIND_BY_ID, $controller->didCheckAuth);
 
         ob_start();
         $response = $controller(new ServerRequest([ 'id' => 2 ]));
@@ -109,6 +120,7 @@ class AbstractControllerTest extends TestCase
             '{"name":"Trens roxnas et plokeing","description":"Lucius in domus est"}',
             $response->getBody()->getMockContents()
         );
+        $this->assertEquals(AbstractController::ADD, $controller->didCheckAuth);
     }
 
     public function testUpdate()
@@ -126,6 +138,7 @@ class AbstractControllerTest extends TestCase
             '{"id":3,"name":"Updated stuff","description":"Lucius in domus est"}',
             $response->getBody()->getMockContents()
         );
+        $this->assertEquals(AbstractController::UPDATE, $controller->didCheckAuth);
     }
 
     public function testDelete()
@@ -143,5 +156,49 @@ class AbstractControllerTest extends TestCase
             '{"success":true,"message":"Deleted #3","id":3}',
             $response->getBody()->getMockContents()
         );
+        $this->assertEquals(AbstractController::DELETE, $controller->didCheckAuth);
+    }
+
+    public function testUnauthorizedRequests()
+    {
+        $request = new ServerRequest();
+        $idRequest = $request->withAttribute('id', 3);
+        $controller = new ACMockController();
+        $controller->mockAuthorize = false;
+
+        // Find all
+        ob_start();
+        $response = $controller($request);
+        ob_end_clean();
+        $this->assertEquals('{"success":false}', $response->getBody()->getMockContents());
+        $this->assertEquals(403, $response->getStatusCode());
+
+        // Find by id
+        ob_start();
+        $response = $controller($idRequest);
+        ob_end_clean();
+        $this->assertEquals('{"success":false}', $response->getBody()->getMockContents());
+        $this->assertEquals(403, $response->getStatusCode());
+
+        // Insert
+        ob_start();
+        $response = $controller($request->withMethod('POST'));
+        ob_end_clean();
+        $this->assertEquals('{"success":false}', $response->getBody()->getMockContents());
+        $this->assertEquals(403, $response->getStatusCode());
+
+        // Update
+        ob_start();
+        $response = $controller($idRequest->withMethod('PUT'));
+        ob_end_clean();
+        $this->assertEquals('{"success":false}', $response->getBody()->getMockContents());
+        $this->assertEquals(403, $response->getStatusCode());
+
+        // Delete
+        ob_start();
+        $response = $controller($idRequest->withMethod('DELETE'));
+        ob_end_clean();
+        $this->assertEquals('{"success":false}', $response->getBody()->getMockContents());
+        $this->assertEquals(403, $response->getStatusCode());
     }
 }
