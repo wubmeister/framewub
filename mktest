@@ -34,16 +34,17 @@ if (empty($className)) {
             "    public function testFunction()\n    {\n\n    }\n}\n";
     } else {
         $php .= "use Framewub\\Db\\MySQL;\n\n" .
-            "class {$simpleClassName} extends \PHPUnit_Extensions_Database_TestCase\n{\n" .
-            "    private $sharedPdo;\n    private $db;\n\n" .
+            "class {$simpleClassName}Test extends \PHPUnit_Extensions_Database_TestCase\n{\n" .
+            "    private \$sharedPdo;\n    private \$db;\n\n" .
             "    public function __construct()\n    {\n" .
             "        \$this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');\n" .
             "        \$this->sharedPdo = \$this->db->getPdo();\n" .
-            "    }\n" .
-            "    /**\n     * @return PHPUnit_Extensions_Database_DB_IDatabaseConnection\n     */" .
+            "    }\n\n" .
+            "    /**\n     * @return PHPUnit_Extensions_Database_DB_IDatabaseConnection\n     */\n" .
             "    public function getConnection()\n    {\n        return \$this->createDefaultDBConnection(\$this->sharedPdo, 'framewub_test');\n    }\n\n" .
             "    /**\n     * @return PHPUnit_Extensions_Database_DataSet_IDataSet\n     */\n" .
-            "    public function getDataSet()\n    {\n        return $this->createFlatXMLDataSet(dirname(dirname(__DIR__)).'/data/test-seed.xml');\n    }\n" .
+            "    public function getDataSet()\n    {\n        return \$this->createFlatXMLDataSet(dirname(dirname(__DIR__)).'/data/test-seed.xml');\n    }\n\n" .
+            "    public function testFunction()\n    {\n\n    }\n" .
             "}\n";
     }
 
