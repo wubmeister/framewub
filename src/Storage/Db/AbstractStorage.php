@@ -69,6 +69,26 @@ class AbstractStorage implements StorageInterface
     }
 
     /**
+     * Finds multiple records based on a select query
+     *
+     * @param Framewub\Db\Query\Select|string $select
+     *   The select query
+     *
+     * @return Framewub\Storage\Db\Rowset
+     *   The rowset with the result
+     */
+    protected function findBySelect($select)
+    {
+        $rowset = new Rowset($select, $this);
+
+        if ($this->objectClass) {
+            $rowset->setObjectClass($this->objectClass);
+        }
+
+        return $rowset;
+    }
+
+    /**
      * Finds rows in the table matching the specified set of conditions.
      *
      * @param array $where
@@ -76,6 +96,9 @@ class AbstractStorage implements StorageInterface
      *   the table are fetched
      * @param string|array $order
      *   OPTIONAL. The order column(s)
+     *
+     * @return Framewub\Storage\Db\Rowset
+     *   The rowset with the result
      */
     public function find($where = null, $order = null)
     {
@@ -89,11 +112,7 @@ class AbstractStorage implements StorageInterface
             $select->order($order);
         }
 
-        $rowset = new Rowset($select, $this);
-        if ($this->objectClass) {
-            $rowset->setObjectClass($this->objectClass);
-        }
-        return $rowset;
+        return $this->findBySelect($select);
     }
 
     /**
@@ -102,6 +121,9 @@ class AbstractStorage implements StorageInterface
      *
      * @param int|string|array $idOrWhere
      *   An ID or set of conditions
+     *
+     * @return Framewub\Storage\StorageObject
+     *   The resulting storage object
      */
     public function findOne($idOrWhere = null)
     {

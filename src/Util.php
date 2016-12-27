@@ -17,15 +17,15 @@ namespace Framewub;
  */
 class Util
 {
-	/**
-	 * Transforms a plural into a singular
-	 *
-	 * @param string $plural
-	 *   The plural
-	 *
-	 * @return string
-	 *   The singular
-	 */
+    /**
+     * Transforms a plural into a singular
+     *
+     * @param string $plural
+     *   The plural
+     *
+     * @return string
+     *   The singular
+     */
     public static function getSingular($plural)
     {
         $singular = $plural;
@@ -44,6 +44,30 @@ class Util
         }
 
         return $singular;
+    }
+
+	/**
+	 * Transforms a singular into a plural
+	 *
+	 * @param string $singular
+	 *   The singular
+	 *
+	 * @return string
+	 *   The plural
+	 */
+    public static function getPlural($singular)
+    {
+        $plural = $singular;
+
+        if (substr($singular, -2) == 'um') {
+            $plural = substr($singular, 0, strlen($singular) - 2) . 'a';
+        } else if (substr($singular, -2) == 'ch' || substr($singular, -1) == 's') {
+            $plural = $singular . 'es';
+        } else {
+            $plural = $singular . 's';
+        }
+
+        return $plural;
     }
 
 }

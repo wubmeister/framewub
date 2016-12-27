@@ -17,4 +17,16 @@ class UtilTest extends TestCase
         $singular = Util::getSingular('branches');
         $this->assertEquals('branch', $singular);
     }
+
+    public function testGetPlural()
+    {
+        $plural = Util::getPlural('test');
+        $this->assertEquals('tests', $plural);
+
+        $plural = Util::getPlural('criterium');
+        $this->assertEquals('criteria', $plural);
+
+        $plural = Util::getPlural('branch');
+        $this->assertEquals('branches', $plural);
+    }
 }
