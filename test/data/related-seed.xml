@@ -7,7 +7,6 @@
 
     <users id="1" username="testuser" password="2dd4ca67f27c5da6fe2d1ce5bc105e90979fec8323b52e435cb324bbf29e3621" salt="m5N8E59b4yErDrgcDgdpFU8W6yJbIFFbnp/yKxahsP2d124aQBqWWFTxpHKp6ZbA" />
 
-    <!--
     <testcases id="1" test_id="1" name="First test, first testcase" created="2012-12-10 16:30:00" />
     <testcases id="2" test_id="1" name="First test, second testcase" created="2013-02-10 16:30:00" />
     <testcases id="3" test_id="1" name="First test, third testcase" created="2013-04-10 16:30:00" />
@@ -37,5 +36,4 @@
     <testcase_has_items testcase_id="9" item_id="1" />
     <testcase_has_items testcase_id="9" item_id="2" />
     <testcase_has_items testcase_id="9" item_id="3" />
-	-->
 </dataset>
