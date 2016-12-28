@@ -79,6 +79,14 @@ class AbstractRelated extends AbstractStorage
                         ->where([ $fk => $otherId ]);
                     break;
 
+                case self::MANY_TO_MANY:
+                    $fk = $linkTable.'.'.$fkToOther;
+                    $select
+                        ->from($linkTable, [])
+                        ->joinLeft($this->tableName, $this->tableName.'.id = '.$linkTable.'.'.$fkToSelf)
+                        ->where([ $fk => $otherId ]);
+                    break;
+
                 default:
                     throw new InvalidArgumentException("Relationship type not implemented");
 
@@ -128,9 +136,20 @@ class AbstractRelated extends AbstractStorage
                         ->where([ $fk => $id ]);
                     break;
 
+                case self::MANY_TO_MANY:
+                    $fk = $linkTable.'.'.$fkToSelf;
+                    $select
+                        ->from($linkTable, [])
+                        ->joinLeft($storageObj->tableName, $storageObj->tableName.'.id = '.$linkTable.'.'.$fkToOther)
+                        ->where([ $fk => $id ]);
+                    break;
+
+                default:
+                    throw new InvalidArgumentException("Relationship type not implemented");
+
             }
 
-            return $storageObj->find($where);
+            return $storageObj->findBySelect($select);
         }
 
         return null;

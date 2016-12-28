@@ -22,7 +22,17 @@ class ARTestcaseStorage extends AbstractRelated
     protected $tableName = 'testcases';
 
     protected $relations = [
-        'tests' => [ 'type' => self::MANY_TO_ONE, 'storage' => 'ARTestStorage', 'fkToOther' => 'test_id' ]
+        'tests' => [ 'type' => self::MANY_TO_ONE, 'storage' => 'ARTestStorage', 'fkToOther' => 'test_id' ],
+        'items' => [ 'type' => self::MANY_TO_MANY, 'storage' => 'ARItemStorage', 'fkToSelf' => 'testcase_id', 'fkToOther' => 'item_id', 'linkTable' => 'testcase_has_items' ]
+    ];
+}
+
+class ARItemStorage extends AbstractRelated
+{
+    protected $tableName = 'items';
+
+    protected $relations = [
+        'testcases' => [ 'type' => self::MANY_TO_MANY, 'storage' => 'ARTestcaseStorage', 'fkToSelf' => 'item_id', 'fkToOther' => 'testcase_id', 'linkTable' => 'testcase_has_items' ]
     ];
 }
 
@@ -72,6 +82,15 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
         $test = $tests->fetchOne();
         $this->assertInstanceOf(StorageObject::class, $test);
         $this->assertEquals('First test', $test->name);
+
+        $storage = new ARItemStorage($this->db);
+        $items = $storage->findByTestcase(3);
+
+        $this->assertInstanceOf(Rowset::class, $items);
+
+        $item = $items->fetchOne();
+        $this->assertInstanceOf(StorageObject::class, $item);
+        $this->assertEquals('Second item', $item->name);
     }
 
     public function testFindRelated()
@@ -93,5 +112,13 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
         $test = $tests->fetchOne();
         $this->assertInstanceOf(StorageObject::class, $test);
         $this->assertEquals('First test', $test->name);
+
+        $items = $storage->findItems(3);
+
+        $this->assertInstanceOf(Rowset::class, $items);
+
+        $item = $items->fetchOne();
+        $this->assertInstanceOf(StorageObject::class, $item);
+        $this->assertEquals('Second item', $item->name);
     }
 }
