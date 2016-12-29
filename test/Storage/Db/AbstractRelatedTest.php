@@ -127,7 +127,6 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $testStorage = Services::get(ARTestStorage::class, $this->db);
         $testcaseStorage = Services::get(ARTestcaseStorage::class, $this->db);
-        $itemStorage = Services::get(ARItemStorage::class, $this->db);
 
         $testStorage->addTestcase(1, 9);
         $testcase = $testcaseStorage->findOne([ 'id' => 9 ]);
@@ -144,5 +143,25 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertInternalType('array', $result);
         $this->assertEquals(1, $result['testcase_id']);
         $this->assertEquals(2, $result['item_id']);
+    }
+
+    public function testUnlinkRelated()
+    {
+        $testStorage = Services::get(ARTestStorage::class, $this->db);
+        $testcaseStorage = Services::get(ARTestcaseStorage::class, $this->db);
+
+        $testStorage->unlinkTestcase(1, 2);
+        $testcase = $testcaseStorage->findOne([ 'id' => 2 ]);
+        $this->assertNull($testcase->test_id);
+
+        $testcaseStorage->unlinkTest(3, 1);
+        $testcase = $testcaseStorage->findOne([ 'id' => 3 ]);
+        $this->assertNull($testcase->test_id);
+
+        $testcaseStorage->unlinkItem(2, 1);
+        $sql = "SELECT * FROM testcase_has_items WHERE testcase_id = 2 AND item_id = 1";
+        $stmt = $this->db->execute($sql);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $this->assertFalse($result);
     }
 }

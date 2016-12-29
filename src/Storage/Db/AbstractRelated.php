@@ -18,6 +18,7 @@ use Framewub\Services;
 use Framewub\Db\Query\Select;
 use Framewub\Db\Query\Update;
 use Framewub\Db\Query\Insert;
+use Framewub\Db\Query\Delete;
 
 class AbstractRelated extends AbstractStorage
 {
@@ -163,6 +164,8 @@ class AbstractRelated extends AbstractStorage
      *   The ID of the object in this storage
      * @param mixed $otherId
      *   The ID of the object in the other storage
+     * @param array $extraData
+     *   Extra data to insert into the link table for many-to-many relationships
      *
      * @return Framewub\Storage\Db\Rowset|null
      *   The rowset with the results of null if nothing was found
@@ -171,7 +174,6 @@ class AbstractRelated extends AbstractStorage
     {
         if (isset($this->relations[$relation])) {
             extract($this->relations[$relation]);
-
 
             switch ($type) {
                 case self::ONE_TO_MANY:
@@ -207,6 +209,58 @@ class AbstractRelated extends AbstractStorage
     }
 
     /**
+     * Unlinks a related record to a record from this storage by deleting or
+     * updating a relation
+     *
+     * @param string $relation
+     *   The key of the relation, as it is defined in the $relations property.
+     * @param mixed $id
+     *   The ID of the object in this storage
+     * @param mixed $otherId
+     *   The ID of the object in the other storage
+     *
+     * @return Framewub\Storage\Db\Rowset|null
+     *   The rowset with the results of null if nothing was found
+     */
+    protected function unlinkRelated($relation, $id, $otherId, $extraData = [])
+    {
+        if (isset($this->relations[$relation])) {
+            extract($this->relations[$relation]);
+
+            switch ($type) {
+                case self::ONE_TO_MANY:
+                    $storageObj = Services::get($storage, $this->db);
+                    $query = new Update($this->db);
+                    $query
+                        ->table($storageObj->tableName)
+                        ->values([ $fkToSelf => null ])
+                        ->where([ 'id' => $otherId, $fkToSelf => $id ]);
+                    break;
+
+                case self::MANY_TO_ONE:
+                    $query = new Update($this->db);
+                    $query
+                        ->table($this->tableName)
+                        ->values([ $fkToOther => null ])
+                        ->where([ 'id' => $id, $fkToOther => $otherId ]);
+                    break;
+
+                case self::MANY_TO_MANY:
+                    $query = new Delete($this->db);
+                    $query
+                        ->from($linkTable)
+                        ->where([ $fkToSelf => $id, $fkToOther => $otherId ]);
+                    break;
+
+                default:
+                    throw new InvalidArgumentException("Relationship type not implemented");
+            }
+
+            $this->db->execute($query, $query->getBind());
+        }
+    }
+
+    /**
      * Handles all 'findBy*', 'find*', 'add*' and 'remove*' function calls.
      *
      * @param string $name
@@ -228,6 +282,9 @@ class AbstractRelated extends AbstractStorage
         } else if (substr($name, 0, 3) == 'add' && strlen($name) > 3) {
             $relName = Util::getPlural(lcfirst(substr($name, 3)));
             return $this->addRelated($relName, $args[0], $args[1], count($args) > 2 ? $args[2] : []);
+        } else if (substr($name, 0, 6) == 'unlink' && strlen($name) > 6) {
+            $relName = Util::getPlural(lcfirst(substr($name, 6)));
+            return $this->unlinkRelated($relName, $args[0], $args[1]);
         }
 
         throw new InvalidArgumentException("Invalid method '{$name}'");
