@@ -16,6 +16,8 @@ use InvalidArgumentException;
 use Framewub\Util;
 use Framewub\Services;
 use Framewub\Db\Query\Select;
+use Framewub\Db\Query\Update;
+use Framewub\Db\Query\Insert;
 
 class AbstractRelated extends AbstractStorage
 {
@@ -60,7 +62,6 @@ class AbstractRelated extends AbstractStorage
 
             $select = new Select($this->db);
             $select->from($this->tableName);
-            $storageObj = Services::get($storage, $this->db);
 
             switch ($type) {
                 case self::MANY_TO_ONE:
@@ -68,6 +69,7 @@ class AbstractRelated extends AbstractStorage
                     break;
 
                 case self::ONE_TO_MANY:
+                    $storageObj = Services::get($storage, $this->db);
                     $fk = $storageObj->tableName.'.id';
                     $select
                         ->from($storageObj->tableName, [])
@@ -152,6 +154,59 @@ class AbstractRelated extends AbstractStorage
     }
 
     /**
+     * Adds a related record to a record from this storage by creating or
+     * updating a relation
+     *
+     * @param string $relation
+     *   The key of the relation, as it is defined in the $relations property.
+     * @param mixed $id
+     *   The ID of the object in this storage
+     * @param mixed $otherId
+     *   The ID of the object in the other storage
+     *
+     * @return Framewub\Storage\Db\Rowset|null
+     *   The rowset with the results of null if nothing was found
+     */
+    protected function addRelated($relation, $id, $otherId, $extraData = [])
+    {
+        if (isset($this->relations[$relation])) {
+            extract($this->relations[$relation]);
+
+
+            switch ($type) {
+                case self::ONE_TO_MANY:
+                    $storageObj = Services::get($storage, $this->db);
+                    $query = new Update($this->db);
+                    $query
+                        ->table($storageObj->tableName)
+                        ->values([ $fkToSelf => $id ])
+                        ->where([ 'id' => $otherId ]);
+                    break;
+
+                case self::MANY_TO_ONE:
+                    $query = new Update($this->db);
+                    $query
+                        ->table($this->tableName)
+                        ->values([ $fkToOther => $otherId ])
+                        ->where([ 'id' => $id ]);
+                    break;
+
+                case self::MANY_TO_MANY:
+                    $extraData[$fkToSelf] = $id;
+                    $extraData[$fkToOther] = $otherId;
+                    $query = new Insert($this->db);
+                    $query->ignore()->into($linkTable)->values($extraData);
+                    break;
+
+                default:
+                    throw new InvalidArgumentException("Relationship type not implemented");
+            }
+
+            $this->db->execute($query, $query->getBind());
+        }
+    }
+
+    /**
      * Handles all 'findBy*', 'find*', 'add*' and 'remove*' function calls.
      *
      * @param string $name
@@ -170,6 +225,9 @@ class AbstractRelated extends AbstractStorage
         } else if (substr($name, 0, 4) == 'find' && strlen($name) > 4) {
             $relName = lcfirst(substr($name, 4));
             return $this->findRelated($relName, $args[0]);
+        } else if (substr($name, 0, 3) == 'add' && strlen($name) > 3) {
+            $relName = Util::getPlural(lcfirst(substr($name, 3)));
+            return $this->addRelated($relName, $args[0], $args[1], count($args) > 2 ? $args[2] : []);
         }
 
         throw new InvalidArgumentException("Invalid method '{$name}'");

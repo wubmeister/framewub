@@ -124,7 +124,7 @@ class Generic
 	 */
 	public function execute($query, array $bind = [])
 	{
-		$statement = $this->prepare((string)$query, $bind);
+		$statement = $this->prepare($query, $bind);
 		if ($statement && $statement->execute()) {
 			return $statement;
 		} else {

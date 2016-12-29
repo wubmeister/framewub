@@ -7,6 +7,7 @@ use Framewub\Storage\Db\AbstractRelated;
 use Framewub\Storage\Db\Rowset;
 use Framewub\Storage\StorageObject;
 use Framewub\Db\MySQL;
+use Framewub\Services;
 
 class ARTestStorage extends AbstractRelated
 {
@@ -65,7 +66,7 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindByRelated()
     {
-        $storage = new ARTestcaseStorage($this->db);
+        $storage = Services::get(ARTestcaseStorage::class, $this->db);
         $testcases = $storage->findByTest(1);
 
         $this->assertInstanceOf(Rowset::class, $testcases);
@@ -74,7 +75,7 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertInstanceOf(StorageObject::class, $tc);
         $this->assertEquals('First test, first testcase', $tc->name);
 
-        $storage = new ARTestStorage($this->db);
+        $storage = Services::get(ARTestStorage::class, $this->db);
         $tests = $storage->findByTestcase(1);
 
         $this->assertInstanceOf(Rowset::class, $tests);
@@ -83,7 +84,7 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertInstanceOf(StorageObject::class, $test);
         $this->assertEquals('First test', $test->name);
 
-        $storage = new ARItemStorage($this->db);
+        $storage = Services::get(ARItemStorage::class, $this->db);
         $items = $storage->findByTestcase(3);
 
         $this->assertInstanceOf(Rowset::class, $items);
@@ -95,7 +96,7 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindRelated()
     {
-        $storage = new ARTestStorage($this->db);
+        $storage = Services::get(ARTestStorage::class, $this->db);
         $testcases = $storage->findTestcases(1);
 
         $this->assertInstanceOf(Rowset::class, $testcases);
@@ -104,7 +105,7 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertInstanceOf(StorageObject::class, $tc);
         $this->assertEquals('First test, first testcase', $tc->name);
 
-        $storage = new ARTestcaseStorage($this->db);
+        $storage = Services::get(ARTestcaseStorage::class, $this->db);
         $tests = $storage->findTest(1);
 
         $this->assertInstanceOf(Rowset::class, $tests);
@@ -120,5 +121,28 @@ class AbstractRelatedTest extends \PHPUnit_Extensions_Database_TestCase
         $item = $items->fetchOne();
         $this->assertInstanceOf(StorageObject::class, $item);
         $this->assertEquals('Second item', $item->name);
+    }
+
+    public function testAddRelated()
+    {
+        $testStorage = Services::get(ARTestStorage::class, $this->db);
+        $testcaseStorage = Services::get(ARTestcaseStorage::class, $this->db);
+        $itemStorage = Services::get(ARItemStorage::class, $this->db);
+
+        $testStorage->addTestcase(1, 9);
+        $testcase = $testcaseStorage->findOne([ 'id' => 9 ]);
+        $this->assertEquals(1, $testcase->test_id);
+
+        $testcaseStorage->addTest(8, 1);
+        $testcase = $testcaseStorage->findOne([ 'id' => 8 ]);
+        $this->assertEquals(1, $testcase->test_id);
+
+        $testcaseStorage->addItem(1, 2);
+        $sql = "SELECT * FROM testcase_has_items WHERE testcase_id = 1 AND item_id = 2";
+        $stmt = $this->db->execute($sql);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $this->assertInternalType('array', $result);
+        $this->assertEquals(1, $result['testcase_id']);
+        $this->assertEquals(2, $result['item_id']);
     }
 }
