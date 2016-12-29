@@ -14,15 +14,11 @@ namespace Framewub\Storage\Db;
 
 use InvalidArgumentException;
 use Framewub\Util;
+use Framewub\Services;
 use Framewub\Db\Query\Select;
 
 class AbstractRelated extends AbstractStorage
 {
-    /**
-     * Defines a one-to-one relationship
-     */
-    const ONE_TO_ONE = 1;
-
     /**
      * Defines a one-to-many relationship
      */
@@ -64,7 +60,7 @@ class AbstractRelated extends AbstractStorage
 
             $select = new Select($this->db);
             $select->from($this->tableName);
-            $storageObj = new $storage($this->db);
+            $storageObj = Services::get($storage, $this->db);
 
             switch ($type) {
                 case self::MANY_TO_ONE:
@@ -119,7 +115,7 @@ class AbstractRelated extends AbstractStorage
         if (isset($this->relations[$relation])) {
             extract($this->relations[$relation]);
 
-            $storageObj = new $storage($this->db);
+            $storageObj = Services::get($storage, $this->db);
             $select = new Select($this->db);
             $select->from($storageObj->tableName);
 

@@ -12,6 +12,8 @@
 
 namespace Framewub;
 
+use ReflectionClass;
+
 class Services
 {
     /**
@@ -34,13 +36,14 @@ class Services
      * @param string $className
      *   The class name
      */
-    public static function get($className)
+    public static function get($className, ...$constructArgs)
     {
         if (!isset(self::$services[$className])) {
             if (isset(self::$factories[$className])) {
                 self::$services[$className] = self::$factories[$className]();
             } else {
-                self::$services[$className] = new $className();
+                $reflector = new ReflectionClass($className);
+                self::$services[$className] = $reflector->newInstanceArgs($constructArgs);
             }
         }
         return self::$services[$className];
