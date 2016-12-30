@@ -2,27 +2,38 @@
 
 use PHPUnit\Framework\TestCase;
 
+use Framewub\Services;
 use Framewub\Db\MySQL;
 use Framewub\Storage\StorageObject;
 use Framewub\Storage\Db\Rowset;
 use Framewub\Storage\Db\AbstractStorage;
 
-class ATSMockStorage extends AbstractStorage
+class ASTestStorage extends AbstractStorage
 {
-    public function setTableName($tableName)
-    {
-        $this->tableName = $tableName;
-    }
+    protected $tableName = 'tests';
 
-    public function setObjectClass($class)
-    {
-        $this->objectClass = $class;
-    }
+    protected $relations = [
+        'testcases' => [ 'type' => self::ONE_TO_MANY, 'storage' => 'ASTestcaseStorage', 'fkToSelf' => 'test_id' ]
+    ];
 }
 
-class ASTMockStorageObject extends StorageObject
+class ASTestcaseStorage extends AbstractStorage
 {
+    protected $tableName = 'testcases';
 
+    protected $relations = [
+        'tests' => [ 'type' => self::MANY_TO_ONE, 'storage' => 'ASTestStorage', 'fkToOther' => 'test_id' ],
+        'items' => [ 'type' => self::MANY_TO_MANY, 'storage' => 'ASItemStorage', 'fkToSelf' => 'testcase_id', 'fkToOther' => 'item_id', 'linkTable' => 'testcase_has_items' ]
+    ];
+}
+
+class ASItemStorage extends AbstractStorage
+{
+    protected $tableName = 'items';
+
+    protected $relations = [
+        'testcases' => [ 'type' => self::MANY_TO_MANY, 'storage' => 'ASTestcaseStorage', 'fkToSelf' => 'item_id', 'fkToOther' => 'testcase_id', 'linkTable' => 'testcase_has_items' ]
+    ];
 }
 
 class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
@@ -49,19 +60,17 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function getDataSet()
     {
-        return $this->createFlatXMLDataSet(dirname(dirname(__DIR__)).'/data/test-seed.xml');
+        return $this->createFlatXMLDataSet(dirname(dirname(__DIR__)).'/data/related-seed.xml');
     }
 
     public function testConstruct()
     {
-        $storage = new ATSMockStorage($this->db);
-        $storage->setTableName('tests');
+        $storage = new ASTestStorage($this->db);
     }
 
     public function testFind()
     {
-        $storage = new ATSMockStorage($this->db);
-        $storage->setTableName('tests');
+        $storage = new ASTestStorage($this->db);
 
         // Find all
         $rowset = $storage->find();
@@ -93,8 +102,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindOne()
     {
-        $storage = new ATSMockStorage($this->db);
-        $storage->setTableName('tests');
+        $storage = new ASTestStorage($this->db);
 
         // Find one by ID
         $obj = $storage->findOne(1);
@@ -111,8 +119,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testInsert()
     {
-        $storage = new ATSMockStorage($this->db);
-        $storage->setTableName('tests');
+        $storage = new ASTestStorage($this->db);
 
         $now = date('Y-m-d H:i:s');
 
@@ -129,8 +136,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testUpdate()
     {
-        $storage = new ATSMockStorage($this->db);
-        $storage->setTableName('tests');
+        $storage = new ASTestStorage($this->db);
 
         $now = date('Y-m-d H:i:s');
         $id = $storage->insert([ 'name' => 'Next test', 'created' => $now ]);
@@ -160,8 +166,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testDelete()
     {
-        $storage = new ATSMockStorage($this->db);
-        $storage->setTableName('tests');
+        $storage = new ASTestStorage($this->db);
 
         // Delete by ID
         $now = date('Y-m-d H:i:s');
@@ -184,8 +189,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testSave()
     {
-        $storage = new ATSMockStorage($this->db);
-        $storage->setTableName('tests');
+        $storage = new ASTestStorage($this->db);
 
         $now = date('Y-m-d H:i:s');
 
@@ -207,14 +211,104 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertEquals($now, $obj->modified);
     }
 
-    public function testSetObjectClass()
+    public function testFindByRelated()
     {
-        $storage = new ATSMockStorage($this->db);
-        $storage->setTableName('tests');
-        $storage->setObjectClass(ASTMockStorageObject::class);
+        $storage = Services::get(ASTestcaseStorage::class, $this->db);
+        $testcases = $storage->findByTest(1);
 
-        $obj = $storage->findOne(2);
-        $this->assertInternalType('object', $obj);
-        $this->assertInstanceOf(ASTMockStorageObject::class, $obj);
+        $this->assertInstanceOf(Rowset::class, $testcases);
+
+        $tc = $testcases->fetchOne();
+        $this->assertInstanceOf(StorageObject::class, $tc);
+        $this->assertEquals('First test, first testcase', $tc->name);
+
+        $storage = Services::get(ASTestStorage::class, $this->db);
+        $tests = $storage->findByTestcase(1);
+
+        $this->assertInstanceOf(Rowset::class, $tests);
+
+        $test = $tests->fetchOne();
+        $this->assertInstanceOf(StorageObject::class, $test);
+        $this->assertEquals('First test', $test->name);
+
+        $storage = Services::get(ASItemStorage::class, $this->db);
+        $items = $storage->findByTestcase(3);
+
+        $this->assertInstanceOf(Rowset::class, $items);
+
+        $item = $items->fetchOne();
+        $this->assertInstanceOf(StorageObject::class, $item);
+        $this->assertEquals('Second item', $item->name);
+    }
+
+    public function testFindRelated()
+    {
+        $storage = Services::get(ASTestStorage::class, $this->db);
+        $testcases = $storage->findTestcases(1);
+
+        $this->assertInstanceOf(Rowset::class, $testcases);
+
+        $tc = $testcases->fetchOne();
+        $this->assertInstanceOf(StorageObject::class, $tc);
+        $this->assertEquals('First test, first testcase', $tc->name);
+
+        $storage = Services::get(ASTestcaseStorage::class, $this->db);
+        $tests = $storage->findTest(1);
+
+        $this->assertInstanceOf(Rowset::class, $tests);
+
+        $test = $tests->fetchOne();
+        $this->assertInstanceOf(StorageObject::class, $test);
+        $this->assertEquals('First test', $test->name);
+
+        $items = $storage->findItems(3);
+
+        $this->assertInstanceOf(Rowset::class, $items);
+
+        $item = $items->fetchOne();
+        $this->assertInstanceOf(StorageObject::class, $item);
+        $this->assertEquals('Second item', $item->name);
+    }
+
+    public function testAddRelated()
+    {
+        $testStorage = Services::get(ASTestStorage::class, $this->db);
+        $testcaseStorage = Services::get(ASTestcaseStorage::class, $this->db);
+
+        $testStorage->addTestcase(1, 9);
+        $testcase = $testcaseStorage->findOne([ 'id' => 9 ]);
+        $this->assertEquals(1, $testcase->test_id);
+
+        $testcaseStorage->addTest(8, 1);
+        $testcase = $testcaseStorage->findOne([ 'id' => 8 ]);
+        $this->assertEquals(1, $testcase->test_id);
+
+        $testcaseStorage->addItem(1, 2);
+        $sql = "SELECT * FROM testcase_has_items WHERE testcase_id = 1 AND item_id = 2";
+        $stmt = $this->db->execute($sql);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $this->assertInternalType('array', $result);
+        $this->assertEquals(1, $result['testcase_id']);
+        $this->assertEquals(2, $result['item_id']);
+    }
+
+    public function testUnlinkRelated()
+    {
+        $testStorage = Services::get(ASTestStorage::class, $this->db);
+        $testcaseStorage = Services::get(ASTestcaseStorage::class, $this->db);
+
+        $testStorage->unlinkTestcase(1, 2);
+        $testcase = $testcaseStorage->findOne([ 'id' => 2 ]);
+        $this->assertNull($testcase->test_id);
+
+        $testcaseStorage->unlinkTest(3, 1);
+        $testcase = $testcaseStorage->findOne([ 'id' => 3 ]);
+        $this->assertNull($testcase->test_id);
+
+        $testcaseStorage->unlinkItem(2, 1);
+        $sql = "SELECT * FROM testcase_has_items WHERE testcase_id = 2 AND item_id = 1";
+        $stmt = $this->db->execute($sql);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $this->assertFalse($result);
     }
 }
