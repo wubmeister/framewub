@@ -539,6 +539,6 @@ class AbstractStorage implements StorageInterface
             return $this->unlinkRelated($relName, $args[0], $args[1]);
         }
 
-        throw new InvalidArgumentException("Invalid method '{$name}'");
+        throw new InvalidArgumentException("Method '{$name}' doesn't exist");
     }
 }
