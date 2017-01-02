@@ -26,6 +26,9 @@ abstract class AbstractTransform
      *
      * @param string $filename
      *   The file name
+     *
+     * @return string
+     *   The rendered PHTML
      */
     public function __construct($filename)
     {

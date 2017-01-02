@@ -19,6 +19,9 @@ class Phtml extends AbstractTransform
      *
      * @param array $data
      *   The data
+     *
+     * @return string
+     *   The rendered PHTML
      */
     public function transform(array $data)
     {
