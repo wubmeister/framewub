@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class to represent a block
+ * Class to represent layouts
  *
  * @package    framewub/block-builder
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
@@ -12,7 +12,7 @@
 
 namespace Framewub\BlockBuilder\Entity;
 
-class Block extends AbstractEntity
+class Layout extends AbstractEntity
 {
     /**
      * Constructs an entity with a definition
@@ -22,7 +22,6 @@ class Block extends AbstractEntity
      */
     public function __construct(array $definition)
     {
-        $this->name = $this->path = $definition['block'];
-        parent::__construct($definition);
+        parent::__construct([ 'content' => $definition ]);
     }
 }

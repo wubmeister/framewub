@@ -43,6 +43,24 @@ class BlockTest extends TestCase
             'content' => 'Dingen en zaken'
         ]);
         $phtml = $block->getPhtml();
-        $this->assertEquals("<div class=\"mockblock color-blue\">\n    Dingen en zaken\n</div>", $phtml);
+        $this->assertEquals("<div class=\"specificswrap\">\n    <div class=\"themewrap\">\n    <div class=\"mockblock color-blue\">\n    Dingen en zaken\n</div>\n</div>\n</div>", $phtml);
+    }
+
+    public function testWithElement()
+    {
+        $block = new BlockBuilder_Entity_MockBlock([
+            'block' => 'mockblock',
+            'mods' => [ 'color' => 'blue' ],
+            'content' => [
+                [
+                    'element' => 'mockelement',
+                    'mods' => [ 'size' => 'medium' ],
+                    'content' => 'Lorem ipsum'
+                ]
+            ]
+        ]);
+
+        $phtml = $block->getPhtml();
+        $this->assertEquals("<div class=\"specificswrap\">\n    <div class=\"themewrap\">\n    <div class=\"mockblock color-blue\">\n    <div class=\"specificsitemwrap\">\n    <div class=\"themeitemwrap\">\n    <div class=\"mockelement size-medium\">\n    Lorem ipsum\n</div>\n</div>\n</div>\n</div>\n</div>\n</div>", $phtml);
     }
 }
