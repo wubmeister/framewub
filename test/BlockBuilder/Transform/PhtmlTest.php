@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Framewub\BlockBuilder\Transform\AbstractTransform;
 use Framewub\BlockBuilder\Transform\Phtml;
 
-class PhtmlTest extends TestCase
+class BlockBuilder_PhtmlTest extends TestCase
 {
     protected $phtmlFile;
 

@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use Framewub\Route\AbstractRoute;
 
-class MockRoute extends AbstractRoute
+class Route_MockRoute extends AbstractRoute
 {
     public function match($url)
     {
@@ -21,8 +21,8 @@ class AbstractRouteTest extends TestCase
 {
     public function testChildRoutes()
     {
-        $route = new MockRoute('foo', 'Foo');
+        $route = new Route_MockRoute('foo', 'Foo');
 
-        $route->addChildRoute('bar', new MockRoute('bar', 'Bar'));
+        $route->addChildRoute('bar', new Route_MockRoute('bar', 'Bar'));
     }
 }

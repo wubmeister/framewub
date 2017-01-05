@@ -8,38 +8,38 @@ use Framewub\Storage\Db\StorageObject;
 use Framewub\Storage\Db\Rowset;
 use Framewub\Storage\Db\AbstractStorage;
 
-class DSOTestStorage extends AbstractStorage
+class Storage_Db_Object_TestStorage extends AbstractStorage
 {
     protected $tableName = 'tests';
     protected $objectClass = StorageObject::class;
 
     protected $relations = [
-        'testcases' => [ 'type' => self::ONE_TO_MANY, 'storage' => 'DSOTestcaseStorage', 'fkToSelf' => 'test_id' ]
+        'testcases' => [ 'type' => self::ONE_TO_MANY, 'storage' => 'Storage_Db_Object_TestcaseStorage', 'fkToSelf' => 'test_id' ]
     ];
 }
 
-class DSOTestcaseStorage extends AbstractStorage
+class Storage_Db_Object_TestcaseStorage extends AbstractStorage
 {
     protected $tableName = 'testcases';
     protected $objectClass = StorageObject::class;
 
     protected $relations = [
-        'tests' => [ 'type' => self::MANY_TO_ONE, 'storage' => 'DSOTestStorage', 'fkToOther' => 'test_id' ],
-        'items' => [ 'type' => self::MANY_TO_MANY, 'storage' => 'DSOItemStorage', 'fkToSelf' => 'testcase_id', 'fkToOther' => 'item_id', 'linkTable' => 'testcase_has_items' ]
+        'tests' => [ 'type' => self::MANY_TO_ONE, 'storage' => 'Storage_Db_Object_TestStorage', 'fkToOther' => 'test_id' ],
+        'items' => [ 'type' => self::MANY_TO_MANY, 'storage' => 'Storage_Db_Object_ItemStorage', 'fkToSelf' => 'testcase_id', 'fkToOther' => 'item_id', 'linkTable' => 'testcase_has_items' ]
     ];
 }
 
-class DSOItemStorage extends AbstractStorage
+class Storage_Db_Object_ItemStorage extends AbstractStorage
 {
     protected $tableName = 'items';
     protected $objectClass = StorageObject::class;
 
     protected $relations = [
-        'testcases' => [ 'type' => self::MANY_TO_MANY, 'storage' => 'DSOTestcaseStorage', 'fkToSelf' => 'item_id', 'fkToOther' => 'testcase_id', 'linkTable' => 'testcase_has_items' ]
+        'testcases' => [ 'type' => self::MANY_TO_MANY, 'storage' => 'Storage_Db_Object_TestcaseStorage', 'fkToSelf' => 'item_id', 'fkToOther' => 'testcase_id', 'linkTable' => 'testcase_has_items' ]
     ];
 }
 
-class StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
+class Db_StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
 {
     private $sharedPdo;
     private $db;
@@ -68,7 +68,7 @@ class StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFetchRelated()
     {
-        $testStorage = Services::get(DSOTestStorage::class, $this->db);
+        $testStorage = Services::get(Storage_Db_Object_TestStorage::class, $this->db);
         $test = $testStorage->findOne(1);
         $this->assertInstanceOf(StorageObject::class, $test);
 
@@ -81,8 +81,8 @@ class StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testAddRelated()
     {
-        $testStorage = Services::get(DSOTestStorage::class, $this->db);
-        $testcaseStorage = Services::get(DSOTestcaseStorage::class, $this->db);
+        $testStorage = Services::get(Storage_Db_Object_TestStorage::class, $this->db);
+        $testcaseStorage = Services::get(Storage_Db_Object_TestcaseStorage::class, $this->db);
 
         $test = $testStorage->findOne(1);
 
@@ -96,8 +96,8 @@ class StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testUnlinkRelated()
     {
-        $testStorage = Services::get(DSOTestStorage::class, $this->db);
-        $testcaseStorage = Services::get(DSOTestcaseStorage::class, $this->db);
+        $testStorage = Services::get(Storage_Db_Object_TestStorage::class, $this->db);
+        $testcaseStorage = Services::get(Storage_Db_Object_TestcaseStorage::class, $this->db);
 
         $test = $testStorage->findOne(1);
 

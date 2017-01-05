@@ -68,9 +68,10 @@ class VarExp
         $pattern = str_replace('\\{', '#ESCACC#', $pattern);
         $matchExp = '/' . ($urlMode ? '\/?' : '') . '\{([a-zA-Z][a-zA-Z0-9_]*)(:([^\}]+))?\}(\?)?/';
 
+        $exp = '';
         while (preg_match($matchExp, $pattern, $match, PREG_OFFSET_CAPTURE)) {
             $this->params[] = $match[1][0];
-            if ($match[2][0]) {
+            if (count($match) > 2 && $match[2][0]) {
                 switch ($match[3][0]) {
                     case 'int':
                         $pat = '\d+';
@@ -89,7 +90,10 @@ class VarExp
                 $pat = '.*';
             }
 
-            $exp = $exp . str_replace('/', '\\/', preg_quote(substr($pattern, 0, $match[0][1]))) . "(" . ($urlMode ? '\\/' : '') . "{$pat}){$match[4][0]}";
+            $exp = $exp . str_replace('/', '\\/', preg_quote(substr($pattern, 0, $match[0][1]))) . "(" . ($urlMode ? '\\/' : '') . "{$pat})";
+            if (count($match) > 4) {
+                $exp .= $match[4][0];
+            }
             $pattern = substr($pattern, $match[0][1] + strlen($match[0][0]));
         }
 
@@ -122,9 +126,10 @@ class VarExp
     {
         $result = [];
         array_unshift($params, '*');
+
         if (preg_match($regex, $string, $match)) {
             foreach ($match as $i => $m) {
-                $result[$params[$i]] = $urlMode && $m[0] == '/' ? substr($m, 1) : $m;
+                $result[$params[$i]] = $urlMode && strlen($m) && $m[0] == '/' ? substr($m, 1) : $m;
             }
             return $result;
         }

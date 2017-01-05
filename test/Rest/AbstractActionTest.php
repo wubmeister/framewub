@@ -6,7 +6,7 @@ use Framewub\Rest\AbstractAction;
 use Framewub\Http\Message\ServerRequest;
 use Framewub\Http\Message\Response;
 
-class ACMockAction extends AbstractAction
+class Rest_MockAction extends AbstractAction
 {
     public $didCheckAuth = false;
     public $mockAuthorize = true;
@@ -68,9 +68,14 @@ class ACMockAction extends AbstractAction
 
 class AbstractActionTest extends TestCase
 {
+    public function setUp()
+    {
+        $_SERVER['REQUEST_URI'] = '/';
+    }
+
     public function testFindAll()
     {
-        $action = new ACMockAction();
+        $action = new Rest_MockAction();
         ob_start();
         $response = $action(new ServerRequest());
         ob_end_clean();
@@ -84,7 +89,7 @@ class AbstractActionTest extends TestCase
 
     public function testFindOne()
     {
-        $action = new ACMockAction();
+        $action = new Rest_MockAction();
         ob_start();
         $response = $action(new ServerRequest([ 'id' => 1 ]));
         ob_end_clean();
@@ -110,7 +115,7 @@ class AbstractActionTest extends TestCase
         $_POST['name'] = "Trens roxnas et plokeing";
         $_POST['description'] = "Lucius in domus est";
 
-        $action = new ACMockAction();
+        $action = new Rest_MockAction();
         $request = new ServerRequest();
         ob_start();
         $response = $action($request->withMethod('POST'));
@@ -128,7 +133,7 @@ class AbstractActionTest extends TestCase
         $_POST['name'] = "Updated stuff";
         $_POST['description'] = "Lucius in domus est";
 
-        $action = new ACMockAction();
+        $action = new Rest_MockAction();
         $request = new ServerRequest([ 'id' => 3 ]);
         ob_start();
         $response = $action($request->withMethod('PUT'));
@@ -146,7 +151,7 @@ class AbstractActionTest extends TestCase
         $_POST['name'] = "Updated stuff";
         $_POST['description'] = "Lucius in domus est";
 
-        $action = new ACMockAction();
+        $action = new Rest_MockAction();
         $request = new ServerRequest([ 'id' => 3 ]);
         ob_start();
         $response = $action($request->withMethod('DELETE'));
@@ -163,7 +168,7 @@ class AbstractActionTest extends TestCase
     {
         $request = new ServerRequest();
         $idRequest = $request->withAttribute('id', 3);
-        $action = new ACMockAction();
+        $action = new Rest_MockAction();
         $action->mockAuthorize = false;
 
         // Find all

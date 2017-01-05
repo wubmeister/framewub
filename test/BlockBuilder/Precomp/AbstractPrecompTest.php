@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use Framewub\BlockBuilder\Precomp\AbstractPrecomp;
 
-class MockPrecomp extends AbstractPrecomp
+class BlockBuilder_Precomp_MockPrecomp extends AbstractPrecomp
 {
     public function getFilename($index)
     {
@@ -21,13 +21,13 @@ class AbstractPrecompTest extends TestCase
 {
     public function testFilename()
     {
-        $precomp = new MockPrecomp('/foo/bar.css');
+        $precomp = new BlockBuilder_Precomp_MockPrecomp('/foo/bar.css');
         $this->assertEquals('/foo/bar.css', $precomp->getFilename(0));
     }
 
     public function testAppend()
     {
-        $precomp = new MockPrecomp('/foo/bar.css');
+        $precomp = new BlockBuilder_Precomp_MockPrecomp('/foo/bar.css');
         $precomp->append('/foo/loremipsum.css');
         $this->assertEquals('/foo/bar.css', $precomp->getFilename(0));
         $this->assertEquals('/foo/loremipsum.css', $precomp->getFilename(1));
@@ -35,7 +35,7 @@ class AbstractPrecompTest extends TestCase
 
     public function testGetCompiled()
     {
-    	$precomp = new MockPrecomp('/foo/bar.css');
+    	$precomp = new BlockBuilder_Precomp_MockPrecomp('/foo/bar.css');
     	$this->assertEquals('body { margin: 0; }', $precomp->getCompiled());
     }
 }

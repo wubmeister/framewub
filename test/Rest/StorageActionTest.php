@@ -9,7 +9,7 @@ use Framewub\Db\MySQL;
 use Framewub\Http\Message\ServerRequest;
 use Framewub\Http\Message\Response;
 
-class SCMockStorage extends AbstractStorage
+class Rest_MockStorage extends AbstractStorage
 {
     public function setTableName($tableName)
     {
@@ -22,12 +22,12 @@ class SCMockStorage extends AbstractStorage
     }
 }
 
-class SCMockStorageObject extends StorageObject
+class Rest_MockStorageObject extends StorageObject
 {
 
 }
 
-class SCMockStorageAction extends StorageAction
+class Rest_MockStorageAction extends StorageAction
 {
     private $db;
     private $executedMethods = [];
@@ -39,9 +39,9 @@ class SCMockStorageAction extends StorageAction
 
     protected function getStorage()
     {
-        $storage = new SCMockStorage($this->db);
+        $storage = new Rest_MockStorage($this->db);
         $storage->setTableName('tests');
-        $storage->setObjectClass(SCMockStorageObject::class);
+        $storage->setObjectClass(Rest_MockStorageObject::class);
         return $storage;
     }
 
@@ -103,7 +103,7 @@ class StorageActionTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindAll()
     {
-        $action = new SCMockStorageAction($this->db);
+        $action = new Rest_MockStorageAction($this->db);
         ob_start();
         $response = $action(new ServerRequest());
         ob_end_clean();
@@ -118,7 +118,7 @@ class StorageActionTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindById()
     {
-        $action = new SCMockStorageAction($this->db);
+        $action = new Rest_MockStorageAction($this->db);
         ob_start();
         $response = $action(new ServerRequest([ 'id' => 2 ]));
         ob_end_clean();
@@ -133,7 +133,7 @@ class StorageActionTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testAdd()
     {
-        $action = new SCMockStorageAction($this->db);
+        $action = new Rest_MockStorageAction($this->db);
         $_POST['name'] = 'Fourth test';
         $_POST['created'] = date('Y-m-d H:i:s');
 
@@ -158,7 +158,7 @@ class StorageActionTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testUpdate()
     {
-        $action = new SCMockStorageAction($this->db);
+        $action = new Rest_MockStorageAction($this->db);
         $_POST['name'] = 'Modified test';
         $_POST['modified'] = date('Y-m-d H:i:s');
 
@@ -183,7 +183,7 @@ class StorageActionTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testDelete()
     {
-        $action = new SCMockStorageAction($this->db);
+        $action = new Rest_MockStorageAction($this->db);
         $request = new ServerRequest([ 'id' => 3 ]);
 
         ob_start();

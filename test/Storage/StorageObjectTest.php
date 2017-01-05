@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Framewub\Storage\StorageInterface;
 use Framewub\Storage\StorageObject;
 
-class MockStorage implements StorageInterface
+class Storage_MockStorage implements StorageInterface
 {
 	public function save(array $values)
 	{
@@ -17,7 +17,7 @@ class StorageObjectTest extends TestCase
 {
     public function testConstruct()
     {
-    	$storage = new MockStorage();
+    	$storage = new Storage_MockStorage();
 
         $obj = new StorageObject($storage);
         $obj->foo = 'bar';
@@ -29,7 +29,7 @@ class StorageObjectTest extends TestCase
 
     public function testSave()
     {
-    	$storage = new MockStorage();
+    	$storage = new Storage_MockStorage();
 
         $obj = new StorageObject($storage);
         $obj->foo = 'bar';

@@ -60,6 +60,13 @@ class UploadedFile implements UploadedFileInterface
     protected $error;
 
     /**
+     * The stream for the file
+     *
+     * @var Psr\Http\Message\StreamInterface
+     */
+    protected $stream;
+
+    /**
      * Constructs an uploaded file object with data from the $_FILES variable
      *
      * @param array $data

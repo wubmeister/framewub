@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use Framewub\BlockBuilder\Config;
 
-class ConfigTest extends TestCase
+class BlovckBuilder_ConfigTest extends TestCase
 {
     public function testConfig()
     {

@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use Framewub\BlockBuilder\Entity\AbstractEntity;
 
-class AEMockEntity extends AbstractEntity
+class BlockBuilder_Entity_MockEntity extends AbstractEntity
 {
     public function __construct(array $definition)
     {
@@ -27,7 +27,7 @@ class AbstractEntityTest extends TestCase
 {
     public function testConstruct()
     {
-        $entity = new AEMockEntity([
+        $entity = new BlockBuilder_Entity_MockEntity([
             'entity' => 'mock',
             'mods' => [ 'color' => 'blue' ],
             'content' => []

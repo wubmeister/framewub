@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use Framewub\Template\AbstractTemplate;
 
-class ATMockTemplate extends AbstractTemplate
+class Template_MockTemplate extends AbstractTemplate
 {
     public function render($data = null)
     {
@@ -18,18 +18,18 @@ class AbstractTemplateTest extends TestCase
 {
     public function testRender()
     {
-        $template = new ATMockTemplate(dirname(__DIR__) . '/data/mocktemplate');
+        $template = new Template_MockTemplate(dirname(__DIR__) . '/data/mocktemplate');
         $template->render();
         $this->assertEquals('Hello world', $template->getContent());
     }
 
     public function testRenderWithData()
     {
-        $template = new ATMockTemplate(dirname(__DIR__) . '/data/mocktemplate');
+        $template = new Template_MockTemplate(dirname(__DIR__) . '/data/mocktemplate');
         $template->render([ 'target' => 'John Doe' ]);
         $this->assertEquals('Hello John Doe', $template->getContent());
 
-        $template = new ATMockTemplate(dirname(__DIR__) . '/data/mocktemplate');
+        $template = new Template_MockTemplate(dirname(__DIR__) . '/data/mocktemplate');
         $template->target = 'John Doe';
         $template->render();
         $this->assertEquals('Hello John Doe', $template->getContent());

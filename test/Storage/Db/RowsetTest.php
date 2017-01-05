@@ -8,11 +8,11 @@ use Framewub\Storage\StorageObject;
 use Framewub\Db\Query\Select;
 use Framewub\Storage\Db\AbstractStorage;
 
-class RSMockStorageObject extends StorageObject
+class Storage_Db_Rowset_MockStorageObject extends StorageObject
 {
 }
 
-class RSMockStorage extends AbstractStorage
+class Storage_Db_Rowset_MockStorage extends AbstractStorage
 {
     public function setTableName($tableName)
     {
@@ -39,7 +39,7 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
         $this->sharedPdo = $this->db->getPdo();
-        $this->storage = new RSMockStorage($this->db);
+        $this->storage = new Storage_Db_Rowset_MockStorage($this->db);
     }
 
     /**
@@ -63,11 +63,11 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
         $select = new Select($this->db);
         $select->from('tests')->order('id');
         $rowset = new Rowset($select, $this->storage);
-        $rowset->setObjectClass(RSMockStorageObject::class);
+        $rowset->setObjectClass(Storage_Db_Rowset_MockStorageObject::class);
 
         $result = $rowset->fetchOne();
         $this->assertInternalType('object', $result);
-        $this->assertInstanceOf(RSMockStorageObject::class, $result);
+        $this->assertInstanceOf(Storage_Db_Rowset_MockStorageObject::class, $result);
     }
 
     public function testFetchOne()

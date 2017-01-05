@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use Framewub\Auth\AbstractAuth;
 
-class AMockAuth extends AbstractAuth
+class Auth_MockAuth extends AbstractAuth
 {
     public function authenticate(array $credentials)
     {
@@ -16,18 +16,18 @@ class AbstractAuthTest extends TestCase
 {
     public function testConstruct()
     {
-        $auth = new AMockAuth();
+        $auth = new Auth_MockAuth();
         $this->assertFalse($auth->hasIdentity());
     }
 
     public function testAuthenticate()
     {
-        $auth = new AMockAuth();
+        $auth = new Auth_MockAuth();
         $auth->authenticate([ 'username' => 'user', 'password' => 'supersecretpassword' ]);
         $this->assertTrue($auth->hasIdentity());
         $this->assertArrayHasKey('auth_identity', $_SESSION);
 
-        $auth2 = new AMockAuth();
+        $auth2 = new Auth_MockAuth();
         $this->assertTrue($auth2->hasIdentity());
         $identity = $auth2->getIdentity();
         $this->assertInternalType('array', $identity);
@@ -37,7 +37,7 @@ class AbstractAuthTest extends TestCase
 
     public function testRemoveIdentity()
     {
-        $auth = new AMockAuth();
+        $auth = new Auth_MockAuth();
         $auth->authenticate([ 'username' => 'user', 'password' => 'supersecretpassword' ]);
         $this->assertTrue($auth->hasIdentity());
         $this->assertArrayHasKey('auth_identity', $_SESSION);
