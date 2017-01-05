@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema xmlns:b="http://framewub.wubbobos.nl/block-builder/block" xmlns:e="http://framewub.wubbobos.nl/block-builder/element">
+    <b:mockblock color="blue">
+        <e:mockelement size="medium">
+            Lorem ipsum
+        </e:mockelement>
+    </b:mockblock>
+</schema>
