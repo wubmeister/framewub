@@ -14,6 +14,7 @@ namespace Framewub\BlockBuilder\Entity;
 
 use Framewub\BlockBuilder\Config;
 use Framewub\BlockBuilder\Transform\Phtml;
+use Framewub\BlockBuilder\Precomp\Css\Css;
 
 class AbstractEntity
 {
@@ -109,6 +110,45 @@ class AbstractEntity
     }
 
     /**
+     * Collects files for this entity from all configures directories with the
+     * specified extension
+     *
+     * @param array|string $extension
+     *   OPTIONAL. One or more extensions to search for. Can be an array or a
+     *   comma-separated list of extensions. Note: extensions MUST NOT include
+     *   a leading dot. Default value is '*', which searches for any extension.
+     *
+     * @return array
+     *   An array of found file names, with a maximum of three (one for each
+     *   configured directory)
+     */
+    protected function findFiles($extension = '*')
+    {
+        if (is_array($extension)) {
+            $extension = '{' . implode(',', $extension) . '}';
+        } else if ($extension != '*') {
+            $extension = '{' . $extension . '}';
+        }
+
+        $filenames = [
+            Config::$globalDir . '/' . $this->path . '/' . $this->name . '.' . $extension,
+            Config::$themeDir . '/' . $this->path . '/' . $this->name . '.' . $extension,
+            Config::$specificsDir . '/' . $this->path . '/' . $this->name . '.' . $extension
+        ];
+
+        $result = [];
+
+        foreach ($filenames as $filename) {
+            $files = glob($filename, GLOB_BRACE);
+            if (count($files)) {
+                $result[] = $files[0];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns the precompiled PHTML for this entity
      *
      * @return string
@@ -118,19 +158,6 @@ class AbstractEntity
     {
         $content = $this->content;
 
-        if ($this->name && $this->path) {
-            $filenames = [
-                Config::$globalDir . '/' . $this->path . '/' . $this->name . '.*',
-                Config::$themeDir . '/' . $this->path . '/' . $this->name . '.*',
-                Config::$specificsDir . '/' . $this->path . '/' . $this->name . '.*'
-            ];
-
-            $mods = [];
-            foreach ($this->mods as $key => $value) {
-                $mods[] = "{$key}-{$value}";
-            }
-        }
-
         if (!$content && count($this->children) > 0) {
             $content = '';
             foreach ($this->children as $child) {
@@ -139,25 +166,66 @@ class AbstractEntity
         }
 
         if ($this->name && $this->path) {
+            $mods = [];
+            foreach ($this->mods as $key => $value) {
+                $mods[] = "{$key}-{$value}";
+            }
+
             $data = [
                 'mods' => implode(' ', $mods),
                 'content' => $content,
                 'parent' => ''
             ];
 
-            foreach ($filenames as $filename) {
-                $files = glob($filename);
-                if (count($files)) {
-                    $file = $files[0];
+            $files = $this->findFiles([ 'php', 'phtml' ]);
 
-                    $transform = new Phtml($file);
-                    $data['parent'] = $transform->transform($data);
-                }
+            foreach ($files as $file) {
+                $transform = new Phtml($file);
+                $data['parent'] = $transform->transform($data);
             }
 
             return $data['parent'];
         }
 
         return $content;
+    }
+
+    /**
+     * Returns the precompiled CSS for this entity
+     *
+     * @return string
+     *   The PHTML
+     */
+    public function getCss()
+    {
+        $css = '';
+        // $content = $this->content;
+
+        // if (!$content && count($this->children) > 0) {
+        //     $content = '';
+        //     foreach ($this->children as $child) {
+        //         $content .= $child->getPhtml();
+        //     }
+        // }
+
+        if ($this->name && $this->path) {
+            $files = $this->findFiles([ 'css' ]);
+
+            foreach ($files as $file) {
+                $precomp = new Css($file);
+                $compiled = ltrim($precomp->getCompiled());
+
+                if (preg_match("/^@mode (override|extend)(;|\n)/", $compiled, $match)) {
+                    if ($match[1] == 'override') {
+                        $css = '';
+                    }
+                    $compiled = ltrim(substr($compiled, strlen($match[0])));
+                }
+
+                $css .= $compiled;
+            }
+        }
+
+        return $css;
     }
 }

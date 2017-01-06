@@ -46,6 +46,17 @@ class BlockTest extends TestCase
         $this->assertEquals("<div class=\"specificswrap\">\n    <div class=\"themewrap\">\n    <div class=\"mockblock color-blue\">\n    Dingen en zaken\n</div>\n</div>\n</div>", $phtml);
     }
 
+    public function testGetCss()
+    {
+        $block = new BlockBuilder_Entity_MockBlock([
+            'block' => 'mockblock',
+            'mods' => [ 'color' => 'blue' ],
+            'content' => 'Dingen en zaken'
+        ]);
+        $css = $block->getCss();
+        $this->assertEquals(".mockblock {\n    color: red;\n}\n.mockblock {\n    background-color: grey;\n}\n", $css);
+    }
+
     public function testWithElement()
     {
         $block = new BlockBuilder_Entity_MockBlock([
