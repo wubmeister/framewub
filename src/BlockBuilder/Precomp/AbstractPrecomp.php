@@ -22,6 +22,13 @@ abstract class AbstractPrecomp
     protected $files = [];
 
     /**
+     * List of errors that occurred during compilation
+     *
+     * @var array
+     */
+    protected $compilerErrors = [];
+
+    /**
      * Constructs the precompiler with a base file name
      *
      * @param string $filename
@@ -40,6 +47,17 @@ abstract class AbstractPrecomp
     public function append(string $filename)
     {
         $this->files[] = $filename;
+    }
+
+    /**
+     * Gets errors which occured during compilation, if any
+     *
+     * @return array
+     *   An array of strings, expressing the errors
+     */
+    public function getCompilerErrors()
+    {
+        return $this->compilerErrors;
     }
 
     /**
