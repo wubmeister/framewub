@@ -20,12 +20,12 @@ class RouterTest extends TestCase
         // Should match
         $result = $router->match('/lorem/ipsum');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('LoremIpsum', $result['code']);
+        $this->assertEquals('LoremIpsum', $result['middleware']);
 
         // Should match
         $result = $router->match('/foo/bar');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('FooBar', $result['code']);
+        $this->assertEquals('FooBar', $result['middleware']);
     }
 
     public function testBuild()
@@ -60,7 +60,7 @@ class RouterTest extends TestCase
         // Should go to fallback
         $result = $router->match('/dingen/zaken');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('MyFallback', $result['code']);
+        $this->assertEquals('MyFallback', $result['middleware']);
     }
 
     public function testFromConfig()
@@ -71,12 +71,12 @@ class RouterTest extends TestCase
                 'foobar' => [
                     'type' => 'Literal',
                     'descriptor' => '/foo/bar',
-                    'code' => 'FooBar'
+                    'middleware' => 'FooBar'
                 ],
                 'things' => [
                     'type' => 'Resource',
                     'descriptor' => 'things',
-                    'code' => 'Things'
+                    'middleware' => 'Things'
                 ]
             ]
         ]);
@@ -86,17 +86,17 @@ class RouterTest extends TestCase
         // Should match
         $result = $router->match('/foo/bar');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('FooBar', $result['code']);
+        $this->assertEquals('FooBar', $result['middleware']);
 
         // Should match
         $result = $router->match('/things/1');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('Things', $result['code']);
+        $this->assertEquals('Things', $result['middleware']);
         $this->assertEquals('1', $result['params']['thing_id']);
 
         // Should fallback
         $result = $router->match('/lorem/ipsum');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('Fallback', $result['code']);
+        $this->assertEquals('Fallback', $result['middleware']);
     }
 }

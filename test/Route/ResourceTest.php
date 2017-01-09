@@ -19,12 +19,12 @@ class ResourceTest extends TestCase
         // Should match
         $result = $route->match('/things');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('Things', $result['code']);
+        $this->assertEquals('Things', $result['middleware']);
 
         // Should match
         $result = $route->match('/things/1');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('Things', $result['code']);
+        $this->assertEquals('Things', $result['middleware']);
         $this->assertEquals('1', $result['params']['id']);
         $this->assertEquals('1', $result['params']['thing_id']);
     }

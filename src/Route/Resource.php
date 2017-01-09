@@ -39,20 +39,20 @@ class Resource extends AbstractRoute
     protected $idKey;
 
     /**
-     * The constructor takes a resource name and a piece of code (usually a
+     * The constructor takes a resource name and a piece of middleware (usually a
      * class name).
      *
      * @param string $name
      *   The resource name (plural)
-     * @param mixed $code
-     *   The code to map to this route
+     * @param mixed $middleware
+     *   The middleware to map to this route
      */
-    public function __construct($name, $code)
+    public function __construct($name, $middleware)
     {
         $this->name = $name;
         $this->regex = "/\\/{$name}(\\/(\\d+))?/";
         $this->idKey = Util::getSingular($name) . '_id';
-        parent::__construct($name, $code);
+        parent::__construct($name, $middleware);
     }
 
     /**
@@ -62,7 +62,7 @@ class Resource extends AbstractRoute
      *   The URL, starting with a slash ('/')
      *
      * @return array
-     *   If the URL matches the route, it returns an array with the code, the
+     *   If the URL matches the route, it returns an array with the middleware, the
      *   params and rest of the URL. If the URL doesn't match, it returns null.
      */
     public function match($url)
@@ -73,7 +73,7 @@ class Resource extends AbstractRoute
                 $params['id'] = $match[2];
                 $params[$this->idKey] = $match[2];
             }
-            $result = [ 'code' => $this->code, 'params' => $params, 'tail' => substr($url, strlen($match[0])) ];
+            $result = [ 'middleware' => $this->middleware, 'params' => $params, 'tail' => substr($url, strlen($match[0])) ];
             $this->matchChildRoutes($result['tail'], $result);
             return $result;
         }

@@ -20,11 +20,11 @@ use Framewub\Config;
 abstract class AbstractRoute
 {
 	/**
-	 * The code to map to this route
+	 * The middleware to map to this route
 	 *
 	 * @var mixed
 	 */
-	protected $code;
+	protected $middleware;
 
 	/**
 	 * The child routes
@@ -34,31 +34,31 @@ abstract class AbstractRoute
 	protected $children = [];
 
 	/**
-	 * The constructor should take a route descriptor and a piece of code
+	 * The constructor should take a route descriptor and a piece of middleware
 	 * (usually a class name). Subclasses should decide for themselves what to
 	 * do with the descriptor, since the abstract constructor doens't store it
 	 * anywhere.
 	 *
 	 * @param string $descriptor
 	 *   The route descriptor (pattern, resource name, literal, etc)
-	 * @param mixed $code
-	 *   The code to map to this route
+	 * @param mixed $middleware
+	 *   The middleware to map to this route
 	 */
-	public function __construct($descriptor, $code)
+	public function __construct($descriptor, $middleware)
 	{
-		$this->code = $code;
+		$this->middleware = $middleware;
 	}
 
 	/**
-	 * Gets the mapped code. Subclasses can override this method to choose the
-	 * code based on the matching state
+	 * Gets the mapped middleware. Subclasses can override this method to choose
+	 * the middleware based on the matching state
 	 *
 	 * @return mixed
-	 *   The mapped code
+	 *   The mapped middleware
 	 */
-	public function getCode()
+	public function getmiddleware()
 	{
-		return $this->code;
+		return $this->middleware;
 	}
 
 	/**
@@ -92,7 +92,7 @@ abstract class AbstractRoute
 				if (count($res['params'])) {
 					$result['params'] = array_merge($result['params'], $res['params']);
 				}
-				$result['code'] = $res['code'];
+				$result['middleware'] = $res['middleware'];
 				$result['tail'] = $res['tail'];
 				return $child;
 			}
@@ -135,7 +135,7 @@ abstract class AbstractRoute
                 if (strpos('\\', $className) === FALSE) {
                     $className = 'Framewub\\Route\\' . $className;
                 }
-                $route = new $className($routeConfig->descriptor, $routeConfig->code);
+                $route = new $className($routeConfig->descriptor, $routeConfig->middleware);
                 if ($routeConfig->childRoutes) {
                     $route->loadConfig($routeConfig->childRoutes);
                 }
@@ -151,8 +151,9 @@ abstract class AbstractRoute
 	 *   The URL, starting with a slash ('/')
 	 *
 	 * @return array
-	 *   If the URL matches the route, it returns an array with the code, the
-	 *   params and rest of the URL. If the URL doesn't match, it returns null.
+	 *   If the URL matches the route, it returns an array with the middleware,
+	 *   the params and rest of the URL. If the URL doesn't match, it returns
+	 *   null.
 	 */
 	abstract public function match($url);
 

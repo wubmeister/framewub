@@ -18,22 +18,22 @@ namespace Framewub\Route;
 class Router extends AbstractRoute
 {
     /**
-     * The fallback code
+     * The fallback middleware
      *
      * @var string
      */
     protected $fallback;
 
     /**
-     * The constructor should take a route descriptor and a piece of code
+     * The constructor should take a route descriptor and a piece of middleware
      * (usually a class name).
      *
      * @param string $descriptor
      *   The route descriptor (pattern, resource name, literal, etc)
-     * @param mixed $code
-     *   The code to map to this route
+     * @param mixed $middleware
+     *   The middleware to map to this route
      */
-    public function __construct($descriptor = null, $code = null)
+    public function __construct($descriptor = null, $middleware = null)
     {
         parent::__construct('router', 'NUL');
     }
@@ -45,15 +45,15 @@ class Router extends AbstractRoute
      *   The URL, starting with a slash ('/')
      *
      * @return array
-     *   If the URL matches the route, it returns an array with the code, the
+     *   If the URL matches the route, it returns an array with the middleware, the
      *   params and rest of the URL. If the URL doesn't match, it returns null.
      */
     public function match($url)
     {
-        $result = [ 'code' => null, 'params' => [], 'tail' => $url ];
+        $result = [ 'middleware' => null, 'params' => [], 'tail' => $url ];
         $this->matchChildRoutes($url, $result);
-        if (!$result['code'] && $this->fallback) {
-            $result['code'] = $this->fallback;
+        if (!$result['middleware'] && $this->fallback) {
+            $result['middleware'] = $this->fallback;
         }
         return $result;
     }
@@ -74,14 +74,14 @@ class Router extends AbstractRoute
     }
 
     /**
-     * Sets the code to fall back on if match() doesn't find any matches
+     * Sets the middleware to fall back on if match() doesn't find any matches
      *
-     * @param mixed $code
-     *   The code
+     * @param mixed $middleware
+     *   The middleware
      */
-    public function setFallback($code)
+    public function setFallback($middleware)
     {
-        $this->fallback = $code;
+        $this->fallback = $middleware;
     }
 
     /**

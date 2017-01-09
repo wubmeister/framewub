@@ -19,12 +19,12 @@ class LiteralTest extends TestCase
         // Should match
         $result = $route->match('/foo/bar');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('FooBar', $route->getCode());
+        $this->assertEquals('FooBar', $result['middleware']);
 
         // Should match
         $result = $route->match('/foo/bar/lorem/ipsum');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('FooBar', $route->getCode());
+        $this->assertEquals('FooBar', $result['middleware']);
     }
 
     public function testBuild()
@@ -50,16 +50,16 @@ class LiteralTest extends TestCase
         // Should match
         $result = $route->match('/foo/ipsum');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('Foo', $result['code']);
+        $this->assertEquals('Foo', $result['middleware']);
 
         // Should match
         $result = $route->match('/foo/bar');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('Bar', $result['code']);
+        $this->assertEquals('Bar', $result['middleware']);
 
         // Should match
         $result = $route->match('/foo/lorem');
         $this->assertInternalType('array', $result);
-        $this->assertEquals('Lorem', $result['code']);
+        $this->assertEquals('Lorem', $result['middleware']);
     }
 }

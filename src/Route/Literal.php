@@ -25,30 +25,18 @@ class Literal extends AbstractRoute
 	protected $descriptor;
 
 	/**
-	 * The constructor should take a route descriptor and a piece of code
+	 * The constructor should take a route descriptor and a piece of middleware
 	 * (usually a class name).
 	 *
 	 * @param string $descriptor
 	 *   The route descriptor (pattern, resource name, literal, etc)
-	 * @param mixed $code
-	 *   The code to map to this route
+	 * @param mixed $middleware
+	 *   The middleware to map to this route
 	 */
-	public function __construct($descriptor, $code)
+	public function __construct($descriptor, $middleware)
 	{
-		parent::__construct($descriptor, $code);
+		parent::__construct($descriptor, $middleware);
 		$this->descriptor = $descriptor;
-	}
-
-	/**
-	 * Gets the mapped code. Subclasses can override this method to choose the
-	 * code based on the matching state
-	 *
-	 * @return mixed
-	 *   The mapped code
-	 */
-	public function getCode()
-	{
-		return $this->code;
 	}
 
 	/**
@@ -58,14 +46,14 @@ class Literal extends AbstractRoute
 	 *   The URL, starting with a slash ('/')
 	 *
 	 * @return array
-	 *   If the URL matches the route, it returns an array with the code, the
+	 *   If the URL matches the route, it returns an array with the middleware, the
 	 *   params and rest of the URL. If the URL doesn't match, it returns null.
 	 */
 	public function match($url)
 	{
 		$len = strlen($this->descriptor);
 		if (substr($url, 0, $len) == $this->descriptor) {
-			$result = [ 'code' => $this->code, 'params' => [], 'tail' => substr($url, $len) ];
+			$result = [ 'middleware' => $this->middleware, 'params' => [], 'tail' => substr($url, $len) ];
 			$this->matchChildRoutes($result['tail'], $result);
 			return $result;
 		}
