@@ -22,54 +22,71 @@ use Psr\Http\Message\RequestInterface;
  */
 class App
 {
-	/**
-	 * The router
-	 *
-	 * @var Framewub\Route\Router;
-	 */
-	protected $router;
+    /**
+     * The router
+     *
+     * @var Framewub\Route\Router;
+     */
+    protected $router;
 
-	/**
-	 * Handles a request
-	 *
-	 * @param Psr\Http\Message\RequestInterface $request
-	 *   The request
-	 *
-	 * @return Psr\Http\Message\ResponseInterface
-	 *   The response
-	 */
-	public function handleRequest(RequestInterface $request)
-	{
-		$response = null;
+    /**
+     * The service container to use
+     *
+     * @var Framewub\Container;
+     */
+    protected $container;
 
-		$result = $this->router->match($request->getRequestTarget());
-		if ($result['code']) {
-			$obj = new $result['code']();
-			if (is_array($result['params']) && count($result['params'])) {
-				$request = $request->withAttributes($result['params']);
-			}
-			$response = $obj($request);
-		}
+    /**
+     * Initializes the app with a container
+     *
+     * @param Framewub\Container $container
+     */
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
 
-		if ($response) {
-			if (!($response instanceof ResponseInterface)) {
-				$response = new Response($response);
-			}
-		} else {
-			$response = new Response();
-		}
+    /**
+     * Handles a request
+     *
+     * @param Psr\Http\Message\RequestInterface $request
+     *   The request
+     *
+     * @return Psr\Http\Message\ResponseInterface
+     *   The response
+     */
+    public function handleRequest(RequestInterface $request)
+    {
+        $response = null;
 
-		return $response;
-	}
+        $result = $this->router->match($request->getRequestTarget());
+        if ($result['middleware']) {
+            $obj = $this->container->get($result['middleware']);
+            if (is_array($result['params']) && count($result['params'])) {
+                $request = $request->withAttributes($result['params']);
+            }
+            $response = $obj($request);
+        }
 
-	/**
-	 * Sets the router to use
-	 *
-	 * @param Framewub\Route\Router $router
-	 *   The router
-	 */
-	public function setRouter(Router $router)
-	{
-		$this->router = $router;
-	}
+        if ($response) {
+            if (!($response instanceof ResponseInterface)) {
+                $response = new Response($response);
+            }
+        } else {
+            $response = new Response();
+        }
+
+        return $response;
+    }
+
+    /**
+     * Sets the router to use
+     *
+     * @param Framewub\Route\Router $router
+     *   The router
+     */
+    public function setRouter(Router $router)
+    {
+        $this->router = $router;
+    }
 }

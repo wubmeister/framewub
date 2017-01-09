@@ -3,6 +3,8 @@
 use PHPUnit\Framework\TestCase;
 
 use Framewub\App;
+use Framewub\Config;
+use Framewub\Container;
 use Framewub\Route\Literal;
 use Framewub\Route\Router;
 use Framewub\Http\Message\ServerRequest;
@@ -35,15 +37,32 @@ class AppTest extends TestCase
 
     public function testHandleRequest()
     {
-        $app = new App();
+        $config = new Config([
+            'dependencies' => [
+                'factories' => [
+                    Router::class => function ($container, $name) {
+                        $router = new Router();
+                        $router->addChildRoute('mockplain', new Literal('/plain', 'MockCodePlain'));
+                        $router->setFallback('MockCode');
+                        return $router;
+                    },
+                    App::class => function ($container, $name) {
+                        $app = new App($container);
+                        $app->setRouter($container->get(Router::class));
+                        return $app;
+                    }
+                ],
+                'invokables' => [
+                    MockCode::class => MockCode::class,
+                    MockCodePlain::class => MockCodePlain::class
+                ]
+            ]
+        ]);
+        $container = new Container($config->dependencies);
+
+        $app = $container->get(App::class);
+
         $request = new ServerRequest();
-
-        $router = new Router();
-        $router->addChildRoute('mockplain', new Literal('/plain', 'MockCodePlain'));
-        $router->setFallback('MockCode');
-
-        $app->setRouter($router);
-
         ob_start();
         $response = $app->handleRequest($request);
         ob_end_clean();
