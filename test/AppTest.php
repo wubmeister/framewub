@@ -41,9 +41,7 @@ class AppTest extends TestCase
             'dependencies' => [
                 'factories' => [
                     Router::class => function ($container, $name) {
-                        $router = new Router();
-                        $router->addChildRoute('mockplain', new Literal('/plain', 'MockCodePlain'));
-                        $router->setFallback('MockCode');
+                        $router = Router::fromConfig($container->get('config'));
                         return $router;
                     },
                     App::class => function ($container, $name) {
@@ -56,9 +54,18 @@ class AppTest extends TestCase
                     MockCode::class => MockCode::class,
                     MockCodePlain::class => MockCodePlain::class
                 ]
+            ],
+            'router' => [
+                'fallback' => MockCode::class,
+                'mockplain' => [
+                    'type' => 'Literal',
+                    'descriptor' => '/plain',
+                    'middleware' => MockCodePlain::class
+                ]
             ]
         ]);
         $container = new Container($config->dependencies);
+        $container->set('config', $config);
 
         $app = $container->get(App::class);
 
