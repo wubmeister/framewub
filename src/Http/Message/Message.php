@@ -69,7 +69,7 @@ class Message implements MessageInterface
      *
      * @return static
      */
-    public function withProtocolVersion(string $version)
+    public function withProtocolVersion($version)
     {
         $newRequest = clone $this;
         $newRequest->protocolVersion = $version;
@@ -99,7 +99,7 @@ class Message implements MessageInterface
      *   case-insensitive string comparison. Returns false if no matching header
      *   name is found in the message.
      */
-    public function hasHeader(string $name)
+    public function hasHeader($name)
     {
         $lc = strtolower($name);
         $key = isset($this->headerLCMap[$lc]) ? $this->headerLCMap[$lc] : $name;
@@ -116,7 +116,7 @@ class Message implements MessageInterface
      *   header does not appear in the message, this method returns an empty
      *   array.
      */
-    public function getHeader(string $name)
+    public function getHeader($name)
     {
         $lc = strtolower($name);
         $key = isset($this->headerLCMap[$lc]) ? $this->headerLCMap[$lc] : $name;
@@ -133,7 +133,7 @@ class Message implements MessageInterface
      *  together using a comma. If the header does not appear in the message,
      *  this method returns an empty string.
      */
-    public function getHeaderLine(string $name)
+    public function getHeaderLine($name)
     {
         return implode(',', $this->getHeader($name));
     }
@@ -149,7 +149,7 @@ class Message implements MessageInterface
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader(string $name, $value)
+    public function withHeader($name, $value)
     {
         $newRequest = clone $this;
 
@@ -177,7 +177,7 @@ class Message implements MessageInterface
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader(string $name, $value)
+    public function withAddedHeader($name, $value)
     {
         $newRequest = clone $this;
 
@@ -208,7 +208,7 @@ class Message implements MessageInterface
      *
      * @return static
      */
-    public function withoutHeader(string $name)
+    public function withoutHeader($name)
     {
         $newRequest = clone $this;
 

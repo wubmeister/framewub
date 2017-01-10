@@ -85,7 +85,7 @@ class Request extends Message implements RequestInterface
      * @return static
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod(string $method)
+    public function withMethod($method)
     {
         $method = strtoupper($method);
         if (!in_array($method, [ 'GET', 'POST', 'DELETE', 'PUT', 'OPTIONS' ])) {

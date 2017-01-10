@@ -31,4 +31,4 @@ if (!function_exists('getallheaders')) {
     }
 }
 
-Framewub\Services::register('Session', function () { return new Framewub\Session\Cli(); });
+// Framewub\Services::register('Session', function () { return new Framewub\Session\Cli(); });

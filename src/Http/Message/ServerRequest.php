@@ -253,7 +253,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return mixed
      */
-    public function getAttribute(string $name, $default = null)
+    public function getAttribute($name, $default = null)
     {
         return isset($this->attributes[$name]) ? $this->attributes[$name] : $default;
     }
@@ -268,7 +268,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return static
      */
-    public function withAttribute(string $name, $value)
+    public function withAttribute($name, $value)
     {
         $newRequest = clone $this;
         $newRequest->attributes[$name] = $value;
@@ -298,7 +298,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return static
      */
-    public function withoutAttribute(string $name)
+    public function withoutAttribute($name)
     {
         $newRequest = clone $this;
         if (isset($newRequest->attributes[$name])) {
