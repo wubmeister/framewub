@@ -2,7 +2,8 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Services;
+use Framewub\Config;
+use Framewub\Container;
 use Framewub\Db\MySQL;
 use Framewub\Storage\Db\StorageObject;
 use Framewub\Storage\Db\Resultset;
@@ -42,12 +43,37 @@ class Storage_Db_Object_ItemStorage extends AbstractStorage
 class Db_StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
 {
     private $sharedPdo;
-    private $db;
+    private $container;
 
     public function __construct()
     {
-        $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
-        $this->sharedPdo = $this->db->getPdo();
+        $config = new Config([
+            'dependencies' => [
+                'factories' => [
+                    Generic::class => function ($container, $name) {
+                        return new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
+                    },
+                    Storage_Db_Object_TestStorage::class => function ($container, $name) {
+                        $storage = new Storage_Db_Object_TestStorage($container->get(Generic::class));
+                        $storage->setContainer($container);
+                        return $storage;
+                    },
+                    Storage_Db_Object_TestcaseStorage::class => function ($container, $name) {
+                        $storage = new Storage_Db_Object_TestcaseStorage($container->get(Generic::class));
+                        $storage->setContainer($container);
+                        return $storage;
+                    },
+                    Storage_Db_Object_ItemStorage::class => function ($container, $name) {
+                        $storage = new Storage_Db_Object_ItemStorage($container->get(Generic::class));
+                        $storage->setContainer($container);
+                        return $storage;
+                    }
+                ]
+            ]
+        ]);
+        $this->container = new Container($config->dependencies);
+        // $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
+        $this->sharedPdo = $this->container->get(Generic::class)->getPdo();
     }
 
     /**
@@ -68,7 +94,7 @@ class Db_StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFetchRelated()
     {
-        $testStorage = Services::get(Storage_Db_Object_TestStorage::class, $this->db);
+        $testStorage = $this->container->get(Storage_Db_Object_TestStorage::class);
         $test = $testStorage->findOne(1);
         $this->assertInstanceOf(StorageObject::class, $test);
 
@@ -81,8 +107,8 @@ class Db_StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testAddRelated()
     {
-        $testStorage = Services::get(Storage_Db_Object_TestStorage::class, $this->db);
-        $testcaseStorage = Services::get(Storage_Db_Object_TestcaseStorage::class, $this->db);
+        $testStorage = $this->container->get(Storage_Db_Object_TestStorage::class);
+        $testcaseStorage = $this->container->get(Storage_Db_Object_TestcaseStorage::class);
 
         $test = $testStorage->findOne(1);
 
@@ -96,8 +122,8 @@ class Db_StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testUnlinkRelated()
     {
-        $testStorage = Services::get(Storage_Db_Object_TestStorage::class, $this->db);
-        $testcaseStorage = Services::get(Storage_Db_Object_TestcaseStorage::class, $this->db);
+        $testStorage = $this->container->get(Storage_Db_Object_TestStorage::class);
+        $testcaseStorage = $this->container->get(Storage_Db_Object_TestcaseStorage::class);
 
         $test = $testStorage->findOne(1);
 

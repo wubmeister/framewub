@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Services;
+use Framewub\Session\Cli;
 use Framewub\Session\SessionNamespace;
 
 class SessionNamespaceTest extends TestCase
@@ -11,18 +11,18 @@ class SessionNamespaceTest extends TestCase
 
     public function setUp()
     {
-        $this->session = Services::get('Session');
+        $this->session = new Cli();
     }
 
     public function testCreate()
     {
-        $namespace = new SessionNamespace('namespace');
+        $namespace = new SessionNamespace('namespace', $this->session);
         $this->assertEquals(PHP_SESSION_NONE, $this->session->getStatus());
     }
 
     public function testSetValue()
     {
-        $namespace = new SessionNamespace('namespace');
+        $namespace = new SessionNamespace('namespace', $this->session);
         $namespace->foo = 'bar';
         $this->assertEquals(PHP_SESSION_ACTIVE, $this->session->getStatus());
         $this->assertInternalType('array', $_SESSION['namespace']);
@@ -31,7 +31,7 @@ class SessionNamespaceTest extends TestCase
 
     public function testArray()
     {
-        $namespace = new SessionNamespace('namespace');
+        $namespace = new SessionNamespace('namespace', $this->session);
         $namespace->foo = new stdClass();
         $this->assertEquals(PHP_SESSION_ACTIVE, $this->session->getStatus());
         $this->assertInternalType('array', $_SESSION['namespace']);

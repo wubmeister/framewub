@@ -13,7 +13,6 @@
 namespace Framewub\Session;
 
 use RuntimeException;
-use Framewub\Services;
 
 class SessionNamespace
 {
@@ -36,11 +35,13 @@ class SessionNamespace
      *
      * @param string $namespace
      *   The namespace
+     * @param SessionInterface $session
+     *   The session adapter
      */
-    public function __construct(string $namespace)
+    public function __construct(string $namespace, SessionInterface $session)
     {
         $this->name = $namespace;
-        $this->session = Services::get('Session');
+        $this->session = $session;
     }
 
     /**

@@ -15,7 +15,7 @@ namespace Framewub\Storage\Db;
 use PDO;
 use InvalidArgumentException;
 use Framewub\Util;
-use Framewub\Services;
+use Framewub\Container;
 use Framewub\Db\Generic as GenericDb;
 use Framewub\Storage\StorageInterface;
 use Framewub\Db\Query\AbstractQuery;
@@ -66,6 +66,13 @@ class AbstractStorage implements StorageInterface
     protected $db;
 
     /**
+     * Service container to locate related storages
+     *
+     * @var Framewub\Container
+     */
+    protected $container;
+
+    /**
      * The relations for this storage
      *
      * @var array
@@ -75,6 +82,16 @@ class AbstractStorage implements StorageInterface
     public function __construct(GenericDb $db)
     {
         $this->db = $db;
+    }
+
+    /**
+     * Sets the service container to locate related storages
+     *
+     * @param Framewub\Container $container
+     */
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
     }
 
     /**
@@ -322,7 +339,7 @@ class AbstractStorage implements StorageInterface
                     break;
 
                 case self::ONE_TO_MANY:
-                    $storageObj = Services::get($storage, $this->db);
+                    $storageObj = $this->container->get($storage);
                     $fk = $storageObj->tableName.'.id';
                     $select
                         ->from($storageObj->tableName, [])
@@ -370,7 +387,7 @@ class AbstractStorage implements StorageInterface
         if (isset($this->relations[$relation])) {
             extract($this->relations[$relation]);
 
-            $storageObj = Services::get($storage, $this->db);
+            $storageObj = $this->container->get($storage);
             $select = new Select($this->db);
             $select->from($storageObj->tableName);
 
@@ -429,7 +446,7 @@ class AbstractStorage implements StorageInterface
 
             switch ($type) {
                 case self::ONE_TO_MANY:
-                    $storageObj = Services::get($storage, $this->db);
+                    $storageObj = $this->container->get($storage);
                     $query = new Update($this->db);
                     $query
                         ->table($storageObj->tableName)
@@ -481,7 +498,7 @@ class AbstractStorage implements StorageInterface
 
             switch ($type) {
                 case self::ONE_TO_MANY:
-                    $storageObj = Services::get($storage, $this->db);
+                    $storageObj = $this->container->get($storage);
                     $query = new Update($this->db);
                     $query
                         ->table($storageObj->tableName)

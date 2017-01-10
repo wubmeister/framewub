@@ -2,7 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 
-use Framewub\Services;
+use Framewub\Config;
+use Framewub\Container;
+use Framewub\Db\Generic;
 use Framewub\Db\MySQL;
 use Framewub\Storage\StorageObject;
 use Framewub\Storage\Db\Resultset;
@@ -46,12 +48,37 @@ class Storage_Db_Abstract_ItemStorage extends AbstractStorage
 class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 {
     private $sharedPdo;
-    private $db;
+    private $container;
 
     public function __construct()
     {
-        $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
-        $this->sharedPdo = $this->db->getPdo();
+        $config = new Config([
+            'dependencies' => [
+                'factories' => [
+                    Generic::class => function ($container, $name) {
+                        return new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
+                    },
+                    Storage_Db_Abstract_TestStorage::class => function ($container, $name) {
+                        $storage = new Storage_Db_Abstract_TestStorage($container->get(Generic::class));
+                        $storage->setContainer($container);
+                        return $storage;
+                    },
+                    Storage_Db_Abstract_TestcaseStorage::class => function ($container, $name) {
+                        $storage = new Storage_Db_Abstract_TestcaseStorage($container->get(Generic::class));
+                        $storage->setContainer($container);
+                        return $storage;
+                    },
+                    Storage_Db_Abstract_ItemStorage::class => function ($container, $name) {
+                        $storage = new Storage_Db_Abstract_ItemStorage($container->get(Generic::class));
+                        $storage->setContainer($container);
+                        return $storage;
+                    }
+                ]
+            ]
+        ]);
+        $this->container = new Container($config->dependencies);
+        // $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
+        $this->sharedPdo = $this->container->get(Generic::class)->getPdo();
     }
 
     /**
@@ -72,12 +99,12 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testConstruct()
     {
-        $storage = new Storage_Db_Abstract_TestStorage($this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
     }
 
     public function testFind()
     {
-        $storage = new Storage_Db_Abstract_TestStorage($this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
 
         // Find all
         $resultset = $storage->find();
@@ -109,7 +136,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindOne()
     {
-        $storage = new Storage_Db_Abstract_TestStorage($this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
 
         // Find one by ID
         $obj = $storage->findOne(1);
@@ -126,7 +153,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testInsert()
     {
-        $storage = new Storage_Db_Abstract_TestStorage($this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
 
         $now = date('Y-m-d H:i:s');
 
@@ -143,7 +170,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testUpdate()
     {
-        $storage = new Storage_Db_Abstract_TestStorage($this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
 
         $now = date('Y-m-d H:i:s');
         $id = $storage->insert([ 'name' => 'Next test', 'created' => $now ]);
@@ -173,7 +200,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testDelete()
     {
-        $storage = new Storage_Db_Abstract_TestStorage($this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
 
         // Delete by ID
         $now = date('Y-m-d H:i:s');
@@ -196,7 +223,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testSave()
     {
-        $storage = new Storage_Db_Abstract_TestStorage($this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
 
         $now = date('Y-m-d H:i:s');
 
@@ -220,7 +247,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindByRelated()
     {
-        $storage = Services::get(Storage_Db_Abstract_TestcaseStorage::class, $this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestcaseStorage::class);
         $testcases = $storage->findByTest(1);
 
         $this->assertInstanceOf(Resultset::class, $testcases);
@@ -229,7 +256,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertInstanceOf(Storage_Db_Abstract_TestcaseObject::class, $tc);
         $this->assertEquals('First test, first testcase', $tc->name);
 
-        $storage = Services::get(Storage_Db_Abstract_TestStorage::class, $this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
         $tests = $storage->findByTestcase(1);
 
         $this->assertInstanceOf(Resultset::class, $tests);
@@ -238,7 +265,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertInstanceOf(Storage_Db_Abstract_TestObject::class, $test);
         $this->assertEquals('First test', $test->name);
 
-        $storage = Services::get(Storage_Db_Abstract_ItemStorage::class, $this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_ItemStorage::class);
         $items = $storage->findByTestcase(3);
 
         $this->assertInstanceOf(Resultset::class, $items);
@@ -250,7 +277,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testFindRelated()
     {
-        $storage = Services::get(Storage_Db_Abstract_TestStorage::class, $this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
         $testcases = $storage->findTestcases(1);
 
         $this->assertInstanceOf(Resultset::class, $testcases);
@@ -259,7 +286,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertInstanceOf(Storage_Db_Abstract_TestcaseObject::class, $tc);
         $this->assertEquals('First test, first testcase', $tc->name);
 
-        $storage = Services::get(Storage_Db_Abstract_TestcaseStorage::class, $this->db);
+        $storage = $this->container->get(Storage_Db_Abstract_TestcaseStorage::class);
         $tests = $storage->findTest(1);
 
         $this->assertInstanceOf(Resultset::class, $tests);
@@ -279,8 +306,8 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testAddRelated()
     {
-        $testStorage = Services::get(Storage_Db_Abstract_TestStorage::class, $this->db);
-        $testcaseStorage = Services::get(Storage_Db_Abstract_TestcaseStorage::class, $this->db);
+        $testStorage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
+        $testcaseStorage = $this->container->get(Storage_Db_Abstract_TestcaseStorage::class);
 
         $testStorage->addTestcase(1, 9);
         $testcase = $testcaseStorage->findOne([ 'id' => 9 ]);
@@ -292,7 +319,8 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
         $testcaseStorage->addItem(1, 2);
         $sql = "SELECT * FROM testcase_has_items WHERE testcase_id = 1 AND item_id = 2";
-        $stmt = $this->db->execute($sql);
+        $db = $this->container->get(Generic::class);
+        $stmt = $db->execute($sql);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         $this->assertInternalType('array', $result);
         $this->assertEquals(1, $result['testcase_id']);
@@ -301,8 +329,8 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
     public function testUnlinkRelated()
     {
-        $testStorage = Services::get(Storage_Db_Abstract_TestStorage::class, $this->db);
-        $testcaseStorage = Services::get(Storage_Db_Abstract_TestcaseStorage::class, $this->db);
+        $testStorage = $this->container->get(Storage_Db_Abstract_TestStorage::class);
+        $testcaseStorage = $this->container->get(Storage_Db_Abstract_TestcaseStorage::class);
 
         $testStorage->unlinkTestcase(1, 2);
         $testcase = $testcaseStorage->findOne([ 'id' => 2 ]);
@@ -314,7 +342,8 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
         $testcaseStorage->unlinkItem(2, 1);
         $sql = "SELECT * FROM testcase_has_items WHERE testcase_id = 2 AND item_id = 1";
-        $stmt = $this->db->execute($sql);
+        $db = $this->container->get(Generic::class);
+        $stmt = $db->execute($sql);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         $this->assertFalse($result);
     }

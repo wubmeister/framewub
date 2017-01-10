@@ -50,7 +50,8 @@ class Container
      */
     public function has(string $name)
     {
-        return isset($this->config->factories->{$name});
+        return ($this->config->has('factories') && $this->config->factories->has($name)) ||
+            ($this->config->has('invokables') && $this->config->invokables->has($name));
     }
 
     /**
@@ -66,14 +67,14 @@ class Container
     public function get(string $name)
     {
         if (!isset($this->services[$name])) {
-            if (isset($this->config->factories) && isset($this->config->factories->{$name})) {
+            if ($this->config->has('factories') && $this->config->factories->has($name)) {
                 $func = $this->config->factories->{$name};
                 if (is_string($func)) {
                     $func = new $func();
                 }
                 $this->services[$name] = $func($this, $name);
 
-            } else if (isset($this->config->invokables) && isset($this->config->invokables->{$name})) {
+            } else if ($this->config->has('invokables') && $this->config->invokables->has($name)) {
                 $className = $this->config->invokables->{$name};
                 $this->services[$name] = new $className();
 
