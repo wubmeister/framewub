@@ -36,7 +36,7 @@ class Services
      * @param string $className
      *   The class name
      */
-    public static function get($className, ...$constructArgs)
+    public static function get(string $className, ...$constructArgs)
     {
         if (!isset(self::$services[$className])) {
             if (isset(self::$factories[$className])) {
@@ -60,7 +60,7 @@ class Services
      * @param Closure $factory
      *   The factory function
      */
-    public static function register($name, $factory)
+    public static function register(string $name, $factory)
     {
         self::$factories[$name] = $factory;
     }

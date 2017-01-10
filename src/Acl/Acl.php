@@ -35,7 +35,7 @@ class Acl
      *   The newly created role
      * @throws InvalidArgumentException is the inherit role doesn't exit in the ACL
      */
-    public function addRole($role, $inherits = null)
+    public function addRole(string $role, $inherits = null)
     {
         if ($inherits && !isset($this->roles[$inherits])) {
             throw new InvalidArgumentException("The role '{$role}' doesn't exist in the ACL");
@@ -56,7 +56,7 @@ class Acl
      *
      * @throws InvalidArgumentException is the role doesn't exit in the ACL
      */
-    public function allow($role, $resource, $actions = '*')
+    public function allow(string $role, string $resource, $actions = '*')
     {
         if (!isset($this->roles[$role])) {
             throw new InvalidArgumentException("The role '{$role}' doesn't exist in the ACL");
@@ -76,7 +76,7 @@ class Acl
      *
      * @throws InvalidArgumentException is the role doesn't exit in the ACL
      */
-    public function deny($role, $resource, $actions = '*')
+    public function deny(string $role, string $resource, $actions = '*')
     {
         if (!isset($this->roles[$role])) {
             throw new InvalidArgumentException("The role '{$role}' doesn't exist in the ACL");

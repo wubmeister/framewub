@@ -30,7 +30,7 @@ abstract class AbstractTransform
      * @return string
      *   The rendered PHTML
      */
-    public function __construct($filename)
+    public function __construct(string $filename)
     {
         $this->filename = $filename;
     }

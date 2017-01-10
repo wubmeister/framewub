@@ -122,11 +122,13 @@ class Select extends AbstractQuery
      *   The condition on which to join on
      * @param string|array $columns
      *   OPTIONAL. The column(s) to select from the table. Defaults to '*'.
+     * @param string|null $method
+     *   OPTIONAL. The join method, e.g. 'LEFT', 'INNER', 'RIGHT'
      *
      * @return static
      *   Provides method chaining
      */
-    public function join($table, $condition, $columns = '*', $method = null)
+    public function join($table, string $condition, $columns = '*', $method = null)
     {
         $pair = preg_split('/\s*=\s*/', $condition);
         $condition = $this->db->quoteIdentifier($pair[0]) . ' = ' . $this->db->quoteIdentifier($pair[1]);
@@ -151,7 +153,7 @@ class Select extends AbstractQuery
      * @return static
      *   Provides method chaining
      */
-    public function joinLeft($table, $condition, $columns = '*')
+    public function joinLeft($table, string $condition, $columns = '*')
     {
         return $this->join($table, $condition, $columns, "LEFT");
     }
@@ -171,7 +173,7 @@ class Select extends AbstractQuery
      * @return static
      *   Provides method chaining
      */
-    public function joinRight($table, $condition, $columns = '*')
+    public function joinRight($table, string $condition, $columns = '*')
     {
         return $this->join($table, $condition, $columns, "RIGHT");
     }
@@ -227,7 +229,7 @@ class Select extends AbstractQuery
      * @return static
      *   Provides method chaining
      */
-    public function offset($offset) {
+    public function offset(int $offset) {
         $this->offsetBy = (int)$offset;
 
         return $this;
@@ -242,7 +244,7 @@ class Select extends AbstractQuery
      * @return static
      *   Provides method chaining
      */
-    public function limit($limit) {
+    public function limit(int $limit) {
         $this->limitBy = (int)$limit;
 
         return $this;
@@ -257,7 +259,7 @@ class Select extends AbstractQuery
      * @return static
      *   Provides method chaining
      */
-    public function having($conditions)
+    public function having(array $conditions)
     {
         if ($this->havingClause) {
             $this->havingClause .= " AND ";
@@ -276,7 +278,7 @@ class Select extends AbstractQuery
      * @return static
      *   Provides method chaining
      */
-    public function orHaving($conditions)
+    public function orHaving(array $conditions)
     {
         if ($this->havingClause) {
             $this->havingClause .= " OR ";

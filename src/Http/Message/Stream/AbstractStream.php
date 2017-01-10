@@ -186,7 +186,7 @@ class AbstractStream implements StreamInterface
      *
      * @throws \RuntimeException on failure.
      */
-    public function write($string)
+    public function write(string $string)
     {
         if (!$this->writable) {
             throw new RuntimeException("Stream is not writable");
@@ -218,7 +218,7 @@ class AbstractStream implements StreamInterface
      *
      * @throws \RuntimeException if an error occurs.
      */
-    public function read($length)
+    public function read(int $length)
     {
         if (!$this->readable) {
             throw new RuntimeException("Stream is not readable");

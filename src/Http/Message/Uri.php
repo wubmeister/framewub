@@ -72,7 +72,12 @@ class Uri implements UriInterface
      */
     protected $fragment = '';
 
-	public function __construct($uri)
+    /**
+     * Initializes the object with a URI string
+     *
+     * @param string $uri
+     */
+	public function __construct(string $uri)
 	{
 		$this->uri = $uri;
         if (preg_match('/^(([^@]+)@)?(([^:]+):\/\/)?([^\/:]*)(:(\d+))?([^\?&#]*)(\?([^#]*))?(#(.*))?$/', $uri, $match)) {
@@ -193,7 +198,7 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException for invalid or unsupported schemes.
      */
-    public function withScheme($scheme)
+    public function withScheme(string $scheme)
     {
         $uri = clone $this;
         $uri->scheme = strtolower($scheme);
@@ -210,7 +215,7 @@ class Uri implements UriInterface
      * @return static
      *   A new instance with the specified user information.
      */
-    public function withUserInfo($user, $password = null)
+    public function withUserInfo(string $user, $password = null)
     {
         $uri = clone $this;
         $uri->userInfo = $user . ($password ? ':' . $password : '');
@@ -226,7 +231,7 @@ class Uri implements UriInterface
      * @return static
      *   A new instance with the specified host.
      */
-    public function withHost($host)
+    public function withHost(string $host)
     {
         $uri = clone $this;
         $uri->host = strtolower($host);
@@ -263,7 +268,7 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException for invalid paths.
      */
-    public function withPath($path)
+    public function withPath(string $path)
     {
         $uri = clone $this;
         $uri->path = strtolower($path);
@@ -281,7 +286,7 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException for invalid query strings.
      */
-    public function withQuery($query)
+    public function withQuery(string $query)
     {
         $uri = clone $this;
         $uri->query = preg_replace('/^\?/', '', $query);
@@ -297,7 +302,7 @@ class Uri implements UriInterface
      * @return static
      *   A new instance with the specified fragment.
      */
-    public function withFragment($fragment)
+    public function withFragment(string $fragment)
     {
         $uri = clone $this;
         $uri->fragment = preg_replace('/^#/', '', $fragment);

@@ -76,7 +76,7 @@ class Response extends Message implements ResponseInterface
      * @return static
      * @throws \InvalidArgumentException For invalid status code arguments.
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus(int $code, string $reasonPhrase = '')
     {
         if (!isset(self::$reasonPhrases[$code])) {
             throw new InvalidArgumentException("{$code} is not a valid HTTP status code");

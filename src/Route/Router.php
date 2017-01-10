@@ -33,9 +33,9 @@ class Router extends AbstractRoute
      * @param mixed $middleware
      *   The middleware to map to this route
      */
-    public function __construct($descriptor = null, $middleware = null)
+    public function __construct(string $descriptor = '', $middleware = null)
     {
-        parent::__construct('router', 'NUL');
+        parent::__construct('router', null);
     }
 
     /**

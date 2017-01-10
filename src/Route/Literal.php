@@ -33,7 +33,7 @@ class Literal extends AbstractRoute
 	 * @param mixed $middleware
 	 *   The middleware to map to this route
 	 */
-	public function __construct($descriptor, $middleware)
+	public function __construct(string $descriptor, $middleware)
 	{
 		parent::__construct($descriptor, $middleware);
 		$this->descriptor = $descriptor;

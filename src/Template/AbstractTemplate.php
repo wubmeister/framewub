@@ -41,7 +41,7 @@ abstract class AbstractTemplate
      * @param string $uri
      *   The URI of the tempalte file
      */
-    public function __construct($uri)
+    public function __construct(string $uri)
     {
         $this->uri = $uri;
     }

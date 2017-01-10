@@ -73,7 +73,7 @@ class Insert extends AbstractQuery
      * @return static
      *   Provides method chaining
      */
-    public function ignore($ignore = true)
+    public function ignore(bool $ignore = true)
     {
         $this->ignoreFlag = (bool)$ignore;
 
@@ -90,7 +90,7 @@ class Insert extends AbstractQuery
      * @return static
      *   Provides method chaining
      */
-    public function onDuplicateKey($action, $columns = null)
+    public function onDuplicateKey(int $action, $columns = null)
     {
         if ($action == self::EXCEPTION || $action == self::UPDATE) {
             $this->ignoreFlag = false;

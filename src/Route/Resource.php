@@ -47,7 +47,7 @@ class Resource extends AbstractRoute
      * @param mixed $middleware
      *   The middleware to map to this route
      */
-    public function __construct($name, $middleware)
+    public function __construct(string $name, $middleware)
     {
         $this->name = $name;
         $this->regex = "/\\/{$name}(\\/(\\d+))?/";

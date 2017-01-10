@@ -43,7 +43,7 @@ class Role
      * @param string $inherits
      *   The role this role inherits from
      */
-    public function __construct($name, $inherits = null)
+    public function __construct(string $name, $inherits = null)
     {
         $this->name = $name;
         $this->inherits = $inherits;
@@ -57,7 +57,7 @@ class Role
      * @param string|array $actions
      *   OPTIONAL. The action name(s). Default is access to all actions
      */
-    public function allow($resource, $actions = '*')
+    public function allow(string $resource, $actions = '*')
     {
         if (!is_array($actions)) {
             $actions = [ $actions ];
@@ -78,7 +78,7 @@ class Role
      * @param string|array $actions
      *   OPTIONAL. The action name(s). Default is access to all actions
      */
-    public function deny($resource, $actions = '*')
+    public function deny(string $resource, $actions = '*')
     {
         if (!is_array($actions)) {
             $actions = [ $actions ];
@@ -102,7 +102,7 @@ class Role
      * @return bool
      *   Returns true if access is granted, false if access is denied
      */
-    public function isAllowed($resource, $action = '*')
+    public function isAllowed(string $resource, $action = '*')
     {
         if (array_key_exists($resource, $this->access)) {
             if (array_key_exists($action, $this->access[$resource])) {

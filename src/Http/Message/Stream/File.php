@@ -25,7 +25,7 @@ class File extends AbstractStream
      * @param string $mode
      *   The filemode, compatible with fopen
      */
-    public function __construct($filename, $mode)
+    public function __construct(string $filename, string $mode)
     {
         $this->filename = $filename;
         $this->file = fopen($this->filename, $mode);

@@ -172,7 +172,7 @@ class AbstractQuery
      * @param mixed $value
      *   The value to bind
      */
-    protected function bindParam($param, $value) {
+    protected function bindParam(string $param, $value) {
         $this->bind[$param] = $value;
     }
 
@@ -198,7 +198,7 @@ class AbstractQuery
      * @return string
      *   The part of the 'where' clause
      */
-    protected function whereStr(&$conditions, $glue = 'AND')
+    protected function whereStr(&$conditions, string $glue = 'AND')
     {
         $str = '';
         foreach ($conditions as $key => $value) {
@@ -302,7 +302,7 @@ class AbstractQuery
      * @return static
      *   Provides method chaining
      */
-    public function values($values) {
+    public function values(array $values) {
         foreach ($values as $key => $value) {
             $this->bindParam(":{$key}", $value);
             if (!in_array($key, $this->valueKeys)) {

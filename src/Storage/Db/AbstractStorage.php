@@ -308,7 +308,7 @@ class AbstractStorage implements StorageInterface
      * @return Framewub\Storage\Db\Resultset
      *   The resultset with the results
      */
-    public function findByRelated($relation, $otherId)
+    public function findByRelated(string $relation, $otherId)
     {
         if (isset($this->relations[$relation])) {
             extract($this->relations[$relation]);
@@ -361,7 +361,7 @@ class AbstractStorage implements StorageInterface
      * @return Framewub\Storage\Db\Resultset|null
      *   The resultset with the results of null if nothing was found
      */
-    public function findRelated($relation, $id)
+    public function findRelated(string $relation, $id)
     {
         if (!isset($this->relations[$relation])) {
             $relation = Util::getPlural($relation);
@@ -422,7 +422,7 @@ class AbstractStorage implements StorageInterface
      * @return Framewub\Storage\Db\Resultset|null
      *   The resultset with the results of null if nothing was found
      */
-    public function addRelated($relation, $id, $otherId, $extraData = [])
+    public function addRelated(string $relation, $id, $otherId, $extraData = [])
     {
         if (isset($this->relations[$relation])) {
             extract($this->relations[$relation]);
@@ -474,7 +474,7 @@ class AbstractStorage implements StorageInterface
      * @return Framewub\Storage\Db\Resultset|null
      *   The resultset with the results of null if nothing was found
      */
-    public function unlinkRelated($relation, $id, $otherId, $extraData = [])
+    public function unlinkRelated(string $relation, $id, $otherId, $extraData = [])
     {
         if (isset($this->relations[$relation])) {
             extract($this->relations[$relation]);

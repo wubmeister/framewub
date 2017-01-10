@@ -45,7 +45,7 @@ class Config
 	 * @param string $specifics
 	 *   The directory which contains all the specific template overrides
 	 */
-	public static function setDirs($global, $theme, $specifics)
+	public static function setDirs(string $global, string $theme, string $specifics)
 	{
 		self::$globalDir = $global;
 		self::$themeDir = $theme;

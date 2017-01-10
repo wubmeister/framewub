@@ -112,7 +112,7 @@ abstract class AbstractAction
      * @return bool
      *   Returns true if the client is authorized, false if not.
      */
-    protected function isAuthorized($action)
+    protected function isAuthorized(int $action)
     {
         return true;
     }

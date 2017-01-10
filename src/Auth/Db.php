@@ -66,7 +66,7 @@ class Db extends AbstractAuth
      * @param string $table
      *   The table in which the identities are stored
      */
-    public function __construct(Generic $db, $table)
+    public function __construct(Generic $db, string $table)
     {
         $this->db = $db;
         $this->table = $table;
@@ -82,7 +82,7 @@ class Db extends AbstractAuth
      * @return string
      *   The hashed password
      */
-    protected function hashPassword($password, $salt)
+    protected function hashPassword(string $password, string $salt)
     {
         return hash('sha256', $password.$salt);
     }

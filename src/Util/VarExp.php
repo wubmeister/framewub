@@ -60,7 +60,7 @@ class VarExp
      *   variable will be included in the regular expression subpatterns, so
      *   that optional URL parts can be matched properly.
      */
-    public function __construct($pattern, $urlMode = false)
+    public function __construct(string $pattern, bool $urlMode = false)
     {
         $this->urlMode = $urlMode;
         $this->pattern = preg_replace('/\{([^:]+):[^\}]\}/', '{$1}', $pattern);
@@ -122,7 +122,7 @@ class VarExp
      *   (keys of the array). The key '*' holds the entire macthed string.
      *   If no match is found, this method will return null
      */
-    public static function matchPattern($regex, $params, $string, $urlMode = false)
+    public static function matchPattern(string $regex, array $params, string $string, bool $urlMode = false)
     {
         $result = [];
         array_unshift($params, '*');
@@ -148,7 +148,7 @@ class VarExp
      *   (keys of the array). The key '*' holds the entire macthed string.
      *   If no match is found, this method will return null
      */
-    public function match($string)
+    public function match(string $string)
     {
         return self::matchPattern($this->regex, $this->params, $string, $this->urlMode);
     }
@@ -174,7 +174,7 @@ class VarExp
      * @return string
      *   The resulting string
      */
-    public static function buildPattern($pattern, $variables, $urlMode = false)
+    public static function buildPattern(string $pattern, array $variables, bool $urlMode = false)
     {
         $tokens = [];
         foreach ($variables as $key => $value) {
@@ -207,7 +207,7 @@ class VarExp
      * @return string
      *   The resulting string
      */
-    public function build($variables)
+    public function build(array $variables)
     {
         return self::buildPattern($this->pattern, $variables, $this->urlMode);
     }

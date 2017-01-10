@@ -27,7 +27,7 @@ class PHPInput extends AbstractStream
      * @param string $string
      *   The mocked content
      */
-    public static function mockCliContents($string)
+    public static function mockCliContents(string $string)
     {
         self::$mcc = $string;
     }

@@ -26,7 +26,7 @@ class Util
      * @return string
      *   The singular
      */
-    public static function getSingular($plural)
+    public static function getSingular(string $plural)
     {
         $singular = $plural;
 
@@ -55,7 +55,7 @@ class Util
 	 * @return string
 	 *   The plural
 	 */
-    public static function getPlural($singular)
+    public static function getPlural(string $singular)
     {
         $plural = $singular;
 

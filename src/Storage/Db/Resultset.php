@@ -26,7 +26,7 @@ class Resultset implements Iterator
 	/**
 	 * The select query
 	 *
-	 * @var Framewub\Storage\Query\Select
+	 * @var Framewub\Db\Query\Select
 	 */
 	protected $select;
 
@@ -79,6 +79,14 @@ class Resultset implements Iterator
 	 */
 	protected $currPos = 0;
 
+	/**
+	 * Initializes the resultset with a select object and a storage
+	 *
+	 * @param Framewub\Db\Query\Select $select
+	 *   The select object, which can be modified for certain purposes.
+	 * @param Framewub\Storage\Db\AbstractStorage
+	 *   The storage from which the results come
+	 */
 	public function __construct($select, $storage)
 	{
 		$this->select = $select;
@@ -91,7 +99,7 @@ class Resultset implements Iterator
 	 * @param string $class
 	 *   The class name
 	 */
-	public function setObjectClass($class)
+	public function setObjectClass(string $class)
 	{
 		$this->objectClass = $class;
 	}

@@ -44,7 +44,7 @@ abstract class AbstractRoute
 	 * @param mixed $middleware
 	 *   The middleware to map to this route
 	 */
-	public function __construct($descriptor, $middleware)
+	public function __construct(string $descriptor, $middleware)
 	{
 		$this->middleware = $middleware;
 	}
@@ -69,7 +69,7 @@ abstract class AbstractRoute
 	 * @param Framewub\Route\AbstractRoute $route
 	 *   The child route
 	 */
-	public function addChildRoute($name, AbstractRoute $route)
+	public function addChildRoute(string $name, AbstractRoute $route)
 	{
 		$this->children[$name] = $route;
 	}

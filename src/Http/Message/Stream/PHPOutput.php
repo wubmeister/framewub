@@ -59,7 +59,7 @@ class PHPOutput extends AbstractStream
      *
      * @throws \RuntimeException on failure.
      */
-    public function write($string)
+    public function write(string $string)
     {
         if (!is_string($string) && $this->encodeFuntion) {
             $string = call_user_func($this->encodeFuntion, $string);

@@ -79,7 +79,7 @@ class Generic
 	 * @return string
 	 *   The quoted identifier
 	 */
-	public function quoteIdentifier($identifier)
+	public function quoteIdentifier(string $identifier)
 	{
 		return '"' . str_replace('.', '"."', $identifier) . '"';
 	}
