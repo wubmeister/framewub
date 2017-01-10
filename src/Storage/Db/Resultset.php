@@ -21,7 +21,7 @@ use Framewub\Db\Query\Func;
 /**
  * Abstract database storage class
  */
-class Rowset implements Iterator
+class Resultset implements Iterator
 {
 	/**
 	 * The select query
@@ -170,7 +170,7 @@ class Rowset implements Iterator
 	}
 
 	/**
-	 * Converts the entire rowset into an array
+	 * Converts the entire resultset into an array
 	 *
 	 * @return array
 	 *   The array

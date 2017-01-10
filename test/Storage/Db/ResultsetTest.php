@@ -3,16 +3,16 @@
 use PHPUnit\Framework\TestCase;
 
 use Framewub\Db\MySQL;
-use Framewub\Storage\Db\Rowset;
+use Framewub\Storage\Db\Resultset;
 use Framewub\Storage\StorageObject;
 use Framewub\Db\Query\Select;
 use Framewub\Storage\Db\AbstractStorage;
 
-class Storage_Db_Rowset_MockStorageObject extends StorageObject
+class Storage_Db_Resultset_MockStorageObject extends StorageObject
 {
 }
 
-class Storage_Db_Rowset_MockStorage extends AbstractStorage
+class Storage_Db_Resultset_MockStorage extends AbstractStorage
 {
     public function setTableName($tableName)
     {
@@ -25,7 +25,7 @@ class Storage_Db_Rowset_MockStorage extends AbstractStorage
     }
 }
 
-class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
+class ResultsetTest extends \PHPUnit_Extensions_Database_TestCase
 {
     private $sharedPdo;
     private $storage;
@@ -39,7 +39,7 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $this->db = new MySQL([ 'dbname' => 'framewub_test' ], 'framewub', 'fr4m3wu8');
         $this->sharedPdo = $this->db->getPdo();
-        $this->storage = new Storage_Db_Rowset_MockStorage($this->db);
+        $this->storage = new Storage_Db_Resultset_MockStorage($this->db);
     }
 
     /**
@@ -62,28 +62,28 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $select = new Select($this->db);
         $select->from('tests')->order('id');
-        $rowset = new Rowset($select, $this->storage);
-        $rowset->setObjectClass(Storage_Db_Rowset_MockStorageObject::class);
+        $resultset = new Resultset($select, $this->storage);
+        $resultset->setObjectClass(Storage_Db_Resultset_MockStorageObject::class);
 
-        $result = $rowset->fetchOne();
+        $result = $resultset->fetchOne();
         $this->assertInternalType('object', $result);
-        $this->assertInstanceOf(Storage_Db_Rowset_MockStorageObject::class, $result);
+        $this->assertInstanceOf(Storage_Db_Resultset_MockStorageObject::class, $result);
     }
 
     public function testFetchOne()
     {
         $select = new Select($this->db);
         $select->from('tests')->order('id');
-        $rowset = new Rowset($select, $this->storage);
+        $resultset = new Resultset($select, $this->storage);
 
-        $result = $rowset->fetchOne();
+        $result = $resultset->fetchOne();
         $this->assertInternalType('object', $result);
         $this->assertInstanceOf(StorageObject::class, $result);
         $this->assertEquals(1, $result->id);
         $this->assertEquals('First test', $result->name);
         $this->assertEquals('2012-12-10 16:30:00', $result->created);
 
-        $result = $rowset->fetchOne();
+        $result = $resultset->fetchOne();
         $this->assertInternalType('object', $result);
         $this->assertInstanceOf(StorageObject::class, $result);
         $this->assertEquals(2, $result->id);
@@ -95,9 +95,9 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $select = new Select($this->db);
         $select->from('tests')->order('id');
-        $rowset = new Rowset($select, $this->storage);
+        $resultset = new Resultset($select, $this->storage);
 
-        $result = $rowset->fetchAll();
+        $result = $resultset->fetchAll();
         $this->assertInternalType('array', $result);
 
         $this->assertInternalType('object', $result[0]);
@@ -123,12 +123,12 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $select = new Select($this->db);
         $select->from('tests')->order('id');
-        $rowset = new Rowset($select, $this->storage);
+        $resultset = new Resultset($select, $this->storage);
 
-        $count = $rowset->count();
+        $count = $resultset->count();
         $this->assertEquals(3, $count);
 
-        $result = $rowset->fetchOne();
+        $result = $resultset->fetchOne();
         $this->assertInternalType('object', $result);
         $this->assertInstanceOf(StorageObject::class, $result);
         $this->assertEquals(1, $result->id);
@@ -138,9 +138,9 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $select = new Select($this->db);
         $select->from('tests')->order('id');
-        $rowset = new Rowset($select, $this->storage);
+        $resultset = new Resultset($select, $this->storage);
 
-        $array = $rowset->toArray();
+        $array = $resultset->toArray();
         $this->assertInternalType('array', $array);
         $this->assertEquals(3, count($array));
         $this->assertInternalType('array', $array[0]);
@@ -150,9 +150,9 @@ class RowsetTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $select = new Select($this->db);
         $select->from('tests')->order('id');
-        $rowset = new Rowset($select, $this->storage);
+        $resultset = new Resultset($select, $this->storage);
 
-        foreach ($rowset as $i => $result) {
+        foreach ($resultset as $i => $result) {
             $this->assertInternalType('object', $result);
             $this->assertInstanceOf(StorageObject::class, $result);
 

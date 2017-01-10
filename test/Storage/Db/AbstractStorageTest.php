@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Framewub\Services;
 use Framewub\Db\MySQL;
 use Framewub\Storage\StorageObject;
-use Framewub\Storage\Db\Rowset;
+use Framewub\Storage\Db\Resultset;
 use Framewub\Storage\Db\AbstractStorage;
 
 class Storage_Db_Abstract_TestObject extends StorageObject{}
@@ -80,28 +80,28 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $storage = new Storage_Db_Abstract_TestStorage($this->db);
 
         // Find all
-        $rowset = $storage->find();
-        $this->assertInstanceOf(Rowset::class, $rowset);
-        $this->assertEquals(3, $rowset->count());
-        $obj = $rowset->fetchOne();
+        $resultset = $storage->find();
+        $this->assertInstanceOf(Resultset::class, $resultset);
+        $this->assertEquals(3, $resultset->count());
+        $obj = $resultset->fetchOne();
         $this->assertInstanceOf(Storage_Db_Abstract_TestObject::class, $obj);
         $this->assertEquals(1, $obj->id);
         $this->assertEquals('First test', $obj->name);
 
         // Find with where
-        $rowset = $storage->find([ 'created' => [ '$lt' => '2016-01-01 00:00:00' ] ]);
-        $this->assertInstanceOf(Rowset::class, $rowset);
-        $this->assertEquals(2, $rowset->count());
-        $obj = $rowset->fetchOne();
+        $resultset = $storage->find([ 'created' => [ '$lt' => '2016-01-01 00:00:00' ] ]);
+        $this->assertInstanceOf(Resultset::class, $resultset);
+        $this->assertEquals(2, $resultset->count());
+        $obj = $resultset->fetchOne();
         $this->assertInstanceOf(Storage_Db_Abstract_TestObject::class, $obj);
         $this->assertEquals(1, $obj->id);
         $this->assertEquals('First test', $obj->name);
 
         // Find with order
-        $rowset = $storage->find(null, 'id DESC');
-        $this->assertInstanceOf(Rowset::class, $rowset);
-        $this->assertEquals(3, $rowset->count());
-        $obj = $rowset->fetchOne();
+        $resultset = $storage->find(null, 'id DESC');
+        $this->assertInstanceOf(Resultset::class, $resultset);
+        $this->assertEquals(3, $resultset->count());
+        $obj = $resultset->fetchOne();
         $this->assertInstanceOf(Storage_Db_Abstract_TestObject::class, $obj);
         $this->assertEquals(3, $obj->id);
         $this->assertEquals('Third test', $obj->name);
@@ -223,7 +223,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $storage = Services::get(Storage_Db_Abstract_TestcaseStorage::class, $this->db);
         $testcases = $storage->findByTest(1);
 
-        $this->assertInstanceOf(Rowset::class, $testcases);
+        $this->assertInstanceOf(Resultset::class, $testcases);
 
         $tc = $testcases->fetchOne();
         $this->assertInstanceOf(Storage_Db_Abstract_TestcaseObject::class, $tc);
@@ -232,7 +232,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $storage = Services::get(Storage_Db_Abstract_TestStorage::class, $this->db);
         $tests = $storage->findByTestcase(1);
 
-        $this->assertInstanceOf(Rowset::class, $tests);
+        $this->assertInstanceOf(Resultset::class, $tests);
 
         $test = $tests->fetchOne();
         $this->assertInstanceOf(Storage_Db_Abstract_TestObject::class, $test);
@@ -241,7 +241,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $storage = Services::get(Storage_Db_Abstract_ItemStorage::class, $this->db);
         $items = $storage->findByTestcase(3);
 
-        $this->assertInstanceOf(Rowset::class, $items);
+        $this->assertInstanceOf(Resultset::class, $items);
 
         $item = $items->fetchOne();
         $this->assertInstanceOf(Storage_Db_Abstract_ItemObject::class, $item);
@@ -253,7 +253,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $storage = Services::get(Storage_Db_Abstract_TestStorage::class, $this->db);
         $testcases = $storage->findTestcases(1);
 
-        $this->assertInstanceOf(Rowset::class, $testcases);
+        $this->assertInstanceOf(Resultset::class, $testcases);
 
         $tc = $testcases->fetchOne();
         $this->assertInstanceOf(Storage_Db_Abstract_TestcaseObject::class, $tc);
@@ -262,7 +262,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
         $storage = Services::get(Storage_Db_Abstract_TestcaseStorage::class, $this->db);
         $tests = $storage->findTest(1);
 
-        $this->assertInstanceOf(Rowset::class, $tests);
+        $this->assertInstanceOf(Resultset::class, $tests);
 
         $test = $tests->fetchOne();
         $this->assertInstanceOf(Storage_Db_Abstract_TestObject::class, $test);
@@ -270,7 +270,7 @@ class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 
         $items = $storage->findItems(3);
 
-        $this->assertInstanceOf(Rowset::class, $items);
+        $this->assertInstanceOf(Resultset::class, $items);
 
         $item = $items->fetchOne();
         $this->assertInstanceOf(Storage_Db_Abstract_ItemObject::class, $item);

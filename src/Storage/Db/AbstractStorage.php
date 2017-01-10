@@ -99,18 +99,18 @@ class AbstractStorage implements StorageInterface
      * @param Framewub\Db\Query\Select|string $select
      *   The select query
      *
-     * @return Framewub\Storage\Db\Rowset
-     *   The rowset with the result
+     * @return Framewub\Storage\Db\Resultset
+     *   The resultset with the result
      */
     protected function findBySelect($select)
     {
-        $rowset = new Rowset($select, $this);
+        $resultset = new Resultset($select, $this);
 
         if ($this->objectClass) {
-            $rowset->setObjectClass($this->objectClass);
+            $resultset->setObjectClass($this->objectClass);
         }
 
-        return $rowset;
+        return $resultset;
     }
 
     /**
@@ -122,8 +122,8 @@ class AbstractStorage implements StorageInterface
      * @param string|array $order
      *   OPTIONAL. The order column(s)
      *
-     * @return Framewub\Storage\Db\Rowset
-     *   The rowset with the result
+     * @return Framewub\Storage\Db\Resultset
+     *   The resultset with the result
      */
     public function find($where = null, $order = null)
     {
@@ -161,11 +161,11 @@ class AbstractStorage implements StorageInterface
             $select->where([ 'id' => $idOrWhere ]);
         }
 
-        $rowset = new Rowset($select, $this);
+        $resultset = new Resultset($select, $this);
         if ($this->objectClass) {
-            $rowset->setObjectClass($this->objectClass);
+            $resultset->setObjectClass($this->objectClass);
         }
-        return $rowset->fetchOne();
+        return $resultset->fetchOne();
     }
 
     /**
@@ -305,8 +305,8 @@ class AbstractStorage implements StorageInterface
      * @param mixed $id
      *   The ID of the related object
      *
-     * @return Framewub\Storage\Db\Rowset
-     *   The rowset with the results
+     * @return Framewub\Storage\Db\Resultset
+     *   The resultset with the results
      */
     public function findByRelated($relation, $otherId)
     {
@@ -358,8 +358,8 @@ class AbstractStorage implements StorageInterface
      * @param mixed $id
      *   The ID of the object in this storage
      *
-     * @return Framewub\Storage\Db\Rowset|null
-     *   The rowset with the results of null if nothing was found
+     * @return Framewub\Storage\Db\Resultset|null
+     *   The resultset with the results of null if nothing was found
      */
     public function findRelated($relation, $id)
     {
@@ -419,8 +419,8 @@ class AbstractStorage implements StorageInterface
      * @param array $extraData
      *   Extra data to insert into the link table for many-to-many relationships
      *
-     * @return Framewub\Storage\Db\Rowset|null
-     *   The rowset with the results of null if nothing was found
+     * @return Framewub\Storage\Db\Resultset|null
+     *   The resultset with the results of null if nothing was found
      */
     public function addRelated($relation, $id, $otherId, $extraData = [])
     {
@@ -471,8 +471,8 @@ class AbstractStorage implements StorageInterface
      * @param mixed $otherId
      *   The ID of the object in the other storage
      *
-     * @return Framewub\Storage\Db\Rowset|null
-     *   The rowset with the results of null if nothing was found
+     * @return Framewub\Storage\Db\Resultset|null
+     *   The resultset with the results of null if nothing was found
      */
     public function unlinkRelated($relation, $id, $otherId, $extraData = [])
     {

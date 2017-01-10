@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Framewub\Services;
 use Framewub\Db\MySQL;
 use Framewub\Storage\Db\StorageObject;
-use Framewub\Storage\Db\Rowset;
+use Framewub\Storage\Db\Resultset;
 use Framewub\Storage\Db\AbstractStorage;
 
 class Storage_Db_Object_TestStorage extends AbstractStorage
@@ -73,7 +73,7 @@ class Db_StorageObjectTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertInstanceOf(StorageObject::class, $test);
 
         $test->fetchTestcases();
-        $this->assertInstanceOf(Rowset::class, $test->testcases);
+        $this->assertInstanceOf(Resultset::class, $test->testcases);
         $testcase = $test->testcases->fetchOne();
         $this->assertInstanceOf(StorageObject::class, $testcase);
         $this->assertEquals('First test, first testcase', $testcase->name);
