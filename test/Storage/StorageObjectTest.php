@@ -11,6 +11,20 @@ class Storage_MockStorage implements StorageInterface
 	{
 		return isset($values['id']) ? $values['id'] : 1;
 	}
+
+    public function find($where = null, $order = null)
+    {
+        return [];
+    }
+
+    public function findOne($idOrWhere = null)
+    {
+        return [];
+    }
+
+    public function insert(array $values){}
+    public function update(array $values, $idOrWhere = null){}
+    public function delete($idOrWhere = null){}
 }
 
 class StorageObjectTest extends TestCase

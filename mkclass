@@ -35,13 +35,25 @@ if (empty($className)) {
         $namespace = "Framewub";
     }
 
+    $desc = '';
     if (!isset($params['d'])) {
-        $params['d'] = str_replace('/', '\\', $className);
+        $desc = ' * ' . str_replace('/', '\\', $className);
+    } else {
+        $d = $params['d'];
+        while ($d != '') {
+            if (strlen($d) <= 77) {
+                $desc .= ' * ' . $d;
+            } else {
+                $break = strrpos(substr($d, 0, 77), ' ');
+                $desc .= ' * ' . rtrim(substr($d, 0, $break)) . "\n";
+                $d = substr($d, $break + 1);
+            }
+        }
     }
     $package = 'framewub' . (isset($params['p']) ? '/' . $params['p'] : '');
 
     $php = "<?php\n\n" .
-        "/**\n * {$params['d']}\n *\n * @package    {$package}\n * @author     Wubbo Bos <wubbo@wubbobos.nl>\n * @copyright  Copyright (c) Wubbo Bos\n * @license    GPL\n * @link       https://github.com/wubmeister/framewub\n */\n\n" .
+        "/**\n{$desc}\n *\n * @package    {$package}\n * @author     Wubbo Bos <wubbo@wubbobos.nl>\n * @copyright  Copyright (c) Wubbo Bos\n * @license    GPL\n * @link       https://github.com/wubmeister/framewub\n */\n\n" .
         "namespace {$namespace};\n\n" .
         "class {$simpleClassName}\n{\n}\n";
 

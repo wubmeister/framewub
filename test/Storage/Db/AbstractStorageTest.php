@@ -45,7 +45,7 @@ class Storage_Db_Abstract_ItemStorage extends AbstractStorage
     ];
 }
 
-class AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
+class Db_AbstractStorageTest extends \PHPUnit_Extensions_Database_TestCase
 {
     private $sharedPdo;
     private $container;
