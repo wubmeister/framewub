@@ -90,14 +90,18 @@ class AbstractQuery
      */
     protected function tableStr($table, $columns = '*')
     {
+        $aliases = [];
+
         if (is_array($table)) {
+            $qualifiedNames = [];
             foreach ($table as $alias => $name) {
-                $qualifiedName = $this->db->quoteIdentifier($name) . " AS " . $this->db->quoteIdentifier($alias);
-                break;
+                $qualifiedNames[] = $this->db->quoteIdentifier($name) . (!is_numeric($alias) ? " AS " . $this->db->quoteIdentifier($alias) : "");
+                $aliases[] = is_numeric($alias) ? $name : $alias;
             }
+            $qualifiedName = implode(', ', $qualifiedNames);
         } else {
             $qualifiedName = $this->db->quoteIdentifier($table);
-            $alias = $table;
+            $aliases[] = $table;
         }
 
         if ($columns) {
@@ -105,9 +109,11 @@ class AbstractQuery
                 $columns = [ $columns ];
             }
 
-            $this->columns[$alias] = [];
+            foreach ($aliases as $alias) {
+                $this->columns[$alias] = [];
+            }
 
-            $this->addColumns($columns, $alias);
+            $this->addColumns($columns, $aliases);
         }
 
         return $qualifiedName;
@@ -122,22 +128,33 @@ class AbstractQuery
      *   OPTIONAL. The table the columns belong to. Specify '*' if the column's
      *   don't belong to any table. This is also the default value.
      */
-    protected function addColumns($columns, $table = '*')
+    protected function addColumns($columns, $tables = '*')
     {
         if (!is_array($columns)) {
             $columns = [ $columns ];
         }
 
+        $table = is_array($tables) ? $tables[0] : $tables;
+
         foreach ($columns as $key => $column) {
             if ($column == '*') {
-                $this->columns[$table][] = ($table != '*' ? $this->db->quoteIdentifier($table) . '.' : '') . "*";
+                if (is_array($tables)) {
+                    foreach ($tables as $t) {
+                        $this->columns[$t][] = ($t != '*' ? $this->db->quoteIdentifier($t) . '.' : '') . "*";
+                    }
+                } else {
+                    $this->columns[$table][] = ($table != '*' ? $this->db->quoteIdentifier($table) . '.' : '') . "*";
+                }
             } else if ($column instanceof Func) {
                 $this->columns[$table][] = (string)$column . (!is_numeric($key) ? " AS " . $this->db->quoteIdentifier($key) : "");
             } else {
-                if ($table != '*') {
+                $t = $table;
+                if (strpos($column, '.') === FALSE && $table != '*') {
                     $column = "{$table}.{$column}";
+                } else if (strpos($column, '.')) {
+                    list($t, $c) = explode('.', $column, 2);
                 }
-                $this->columns[$table][] = $this->db->quoteIdentifier($column) . (!is_numeric($key) ? " AS " . $this->db->quoteIdentifier($key) : "");
+                $this->columns[$t][] = $this->db->quoteIdentifier($column) . (!is_numeric($key) ? " AS " . $this->db->quoteIdentifier($key) : "");
             }
         }
     }
@@ -152,7 +169,7 @@ class AbstractQuery
      *   The generated parameter name (beginning with a colon)
      */
     protected function bindValue($value) {
-        if ($value instanceof Func) {
+        if (($value instanceof Func) || $this->db->isIdentifier((string)$value)) {
             return (string)$value;
         }
 

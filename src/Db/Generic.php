@@ -85,6 +85,20 @@ class Generic
 	}
 
 	/**
+	 * Checks if a string is likely to be an identifier
+	 *
+	 * @param string $string
+	 *   The string to check
+	 *
+	 * @return bool
+	 *   Returns true if the string is most likely an identifier, false if definitely not
+	 */
+	public function isIdentifier(string $string)
+	{
+		return $string[0] == '"' && substr($string, -1) == '"';
+	}
+
+	/**
 	 * Prepares a PDO statement and binds value parameters if any are specified
 	 *
 	 * @param string $query

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <dataset>
-    <nodes id="1" parent_id="NULL" left_bound="1" right_bound="16" title="Root" />
+    <nodes id="1" left_bound="1" right_bound="16" title="Root" />
     <nodes id="2" parent_id="1" left_bound="2" right_bound="3" title="Sub 1" />
     <nodes id="3" parent_id="1" left_bound="4" right_bound="7" title="Sub 2" />
     <nodes id="4" parent_id="3" left_bound="5" right_bound="6" title="Sub 2.1" />

@@ -77,4 +77,16 @@ class BranchedObjectTest extends TestCase
         $this->assertEquals(5, $obj4->left);
         $this->assertEquals(6, $obj4->right);
     }
+
+    public function testHasChildren()
+    {
+        $storage = new Storage_BO_MockBranchedStorage();
+
+        $obj = new BranchedObject($storage);
+        $obj2 = new BranchedObject($storage);
+
+        $this->assertFalse($obj->hasChildren());
+        $obj->appendChild($obj2);
+        $this->assertTrue($obj->hasChildren());
+    }
 }

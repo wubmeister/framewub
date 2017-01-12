@@ -42,6 +42,16 @@ class BranchedObject extends StorageObject
     }
 
     /**
+     * Checks if this object has any children
+     *
+     * @return bool
+     */
+    public function hasChildren()
+    {
+        return count($this->children) > 0;
+    }
+
+    /**
      * Returns the size of the node, i.e. the deifference between the left and
      * right bound plus one.
      *

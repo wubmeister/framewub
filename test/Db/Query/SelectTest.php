@@ -34,6 +34,20 @@ class SelectTest extends TestCase
         $select->from([ 'f' => 'foo' ]);
         // Assert the resulting query
         $this->assertEquals("SELECT `f`.* FROM `foo` AS `f`", (string)$select);
+
+        // Test multiple tables
+        $select = new Select($this->db);
+        // Add 'from' clause
+        $select->from([ 'foo', 'bar' ]);
+        // Assert the resulting query
+        $this->assertEquals("SELECT `foo`.*, `bar`.* FROM `foo`, `bar`", (string)$select);
+
+        // Test multiple tables with aliases
+        $select = new Select($this->db);
+        // Add 'from' clause
+        $select->from([ 'f' => 'foo', 'b' => 'bar' ]);
+        // Assert the resulting query
+        $this->assertEquals("SELECT `f`.*, `b`.* FROM `foo` AS `f`, `bar` AS `b`", (string)$select);
     }
 
     public function testJoin()
@@ -182,6 +196,11 @@ class SelectTest extends TestCase
         $result = $select->from('foo', [ 'column1', 'c2' => 'column2' ]);
         // Assert the resulting query
         $this->assertEquals("SELECT `foo`.`column1`, `foo`.`column2` AS `c2` FROM `foo`", (string)$select);
+
+        // Test with multiple tables
+        $result = $select->from([ 'foo', 'bar' ], [ 'column1', 'bar.column2', 'c3' => 'foo.column3' ]);
+        // Assert the resulting query
+        $this->assertEquals("SELECT `foo`.`column1`, `foo`.`column3` AS `c3`, `bar`.`column2` FROM `foo`, `bar`", (string)$select);
     }
 
     public function testWhere()
@@ -257,6 +276,12 @@ class SelectTest extends TestCase
         $select->from('foo')
             ->where([ 'created' => new Func("NOW()") ]);
         $this->assertEquals("SELECT `foo`.* FROM `foo` WHERE (`created` = NOW())", (string)$select);
+
+        // Test comparison to column name
+        $select = new Select($this->db);
+        $select->from('foo')
+            ->where([ 'created' => [ '$gt' => '`modified`' ] ]);
+        $this->assertEquals("SELECT `foo`.* FROM `foo` WHERE (`created` > `modified`)", (string)$select);
 
         // Test between
         $select = new Select($this->db);
