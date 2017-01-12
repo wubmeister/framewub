@@ -43,6 +43,7 @@ if (empty($className)) {
         while ($d != '') {
             if (strlen($d) <= 77) {
                 $desc .= ' * ' . $d;
+                $d = '';
             } else {
                 $break = strrpos(substr($d, 0, 77), ' ');
                 $desc .= ' * ' . rtrim(substr($d, 0, $break)) . "\n";
