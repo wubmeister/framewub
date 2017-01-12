@@ -3,10 +3,12 @@
 use PHPUnit\Framework\TestCase;
 
 use Framewub\Storage\BranchedObject;
-use Framewub\Storage\AbstractBranchedStorage;
+use Framewub\Storage\BranchedTrait;
+use Framewub\Storage\StorageInterface;
 
-class Storage_BO_MockBranchedStorage extends AbstractBranchedStorage
+class Storage_BO_MockBranchedStorage implements StorageInterface
 {
+    use BranchedTrait;
     public function save(array $values)
     {
         return isset($values['id']) ? $values['id'] : 1;
