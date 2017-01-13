@@ -75,14 +75,14 @@ trait BranchedTrait
 
         foreach ($data as $item) {
             $top->appendChild($item);
-            if ($item->{$rightKey} > $item->{$leftKey} + 1) {
+            if ($item->getRight() > $item->getLeft() + 1) {
                 $topStack[] = $top;
                 $top = $item;
-            } else if ($top->{$rightKey} !== null && $item->{$rightKey} == $top->{$rightKey} - 1) {
-                $oldRight = $item->{$rightKey};
-                while ($oldRight == $top->{$rightKey} - 1) {
+            } else if ($top->getRight() !== null && $item->getRight() == $top->getRight() - 1) {
+                $oldRight = $item->getRight();
+                while ($oldRight == $top->getRight() - 1) {
                     $top = array_pop($topStack);
-                    $oldRight = $top->{$rightKey};
+                    $oldRight = $top->getRight();
                 }
             }
         }

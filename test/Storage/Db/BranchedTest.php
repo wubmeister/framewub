@@ -103,4 +103,17 @@ class BranchedTest extends \PHPUnit_Extensions_Database_TestCase
         $this->assertEquals('Sub 3.2', $subChildren[1]->title);
 
     }
+
+    public function testAppendNode()
+    {
+        $storage = $this->container->get(Storage_Db_Branched_TestStorage::class);
+
+        $id = $storage->insert([ 'title' => 'Sub 2.2' ]);
+        $storage->appendNode($id, 2);
+
+        $tree = $storage->fetchTree(2);
+        $children = $tree->getChildren();
+        $this->assertEquals(2, count($children));
+        $this->assertEquals('Sub 2.2', $children[1]->title);
+    }
 }

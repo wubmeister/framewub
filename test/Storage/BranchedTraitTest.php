@@ -35,6 +35,8 @@ class Storage_Branched_MockStorageObject extends BranchedObject
 {
     public function __construct(StorageInterface $storage, $data = [])
     {
+        parent::__construct($storage);
+
         foreach ($data as $key => $value) {
             $this->{$key} = $value;
         }

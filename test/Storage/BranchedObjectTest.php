@@ -9,6 +9,12 @@ use Framewub\Storage\StorageInterface;
 class Storage_BO_MockBranchedStorage implements StorageInterface
 {
     use BranchedTrait;
+
+    public function __construct() {
+        $this->leftKey = 'left_bound';
+        $this->rightKey = 'right_bound';
+    }
+
     public function save(array $values)
     {
         return isset($values['id']) ? $values['id'] : 1;
@@ -70,14 +76,14 @@ class BranchedObjectTest extends TestCase
 
         $obj->resetTreeLayout();
 
-        $this->assertEquals(1, $obj->left);
-        $this->assertEquals(8, $obj->right);
-        $this->assertEquals(2, $obj2->left);
-        $this->assertEquals(3, $obj2->right);
-        $this->assertEquals(4, $obj3->left);
-        $this->assertEquals(7, $obj3->right);
-        $this->assertEquals(5, $obj4->left);
-        $this->assertEquals(6, $obj4->right);
+        $this->assertEquals(1, $obj->left_bound);
+        $this->assertEquals(8, $obj->right_bound);
+        $this->assertEquals(2, $obj2->left_bound);
+        $this->assertEquals(3, $obj2->right_bound);
+        $this->assertEquals(4, $obj3->left_bound);
+        $this->assertEquals(7, $obj3->right_bound);
+        $this->assertEquals(5, $obj4->left_bound);
+        $this->assertEquals(6, $obj4->right_bound);
     }
 
     public function testHasChildren()
@@ -90,5 +96,19 @@ class BranchedObjectTest extends TestCase
         $this->assertFalse($obj->hasChildren());
         $obj->appendChild($obj2);
         $this->assertTrue($obj->hasChildren());
+    }
+
+    public function testGetLeftRight()
+    {
+        $storage = new Storage_BO_MockBranchedStorage();
+
+        $obj = new BranchedObject($storage);
+        $obj->left_bound = '1';
+        $obj->right_bound = '12';
+
+        $this->assertEquals(1, $obj->getLeft());
+        $this->assertInternalType('int', $obj->getLeft());
+        $this->assertEquals(12, $obj->getRight());
+        $this->assertInternalType('int', $obj->getRight());
     }
 }

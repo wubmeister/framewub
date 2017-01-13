@@ -52,18 +52,52 @@ class BranchedObject extends StorageObject
     }
 
     /**
-     * Returns the size of the node, i.e. the deifference between the left and
-     * right bound plus one.
+     * Gets the left bound of this node
+     *
+     * @return int
+     */
+    public function getLeft()
+    {
+        $leftKey = $this->storage->getLeftKey();
+        return (int)$this->{$leftKey};
+    }
+
+    /**
+     * Gets the left bound of this node
+     *
+     * @return int
+     */
+    public function getRight()
+    {
+        $rightKey = $this->storage->getRightKey();
+        return (int)$this->{$rightKey};
+    }
+
+    /**
+     * Calculates the size of the node, i.e. the difference between the left and
+     * right bound plus one. This will caclulate the size by looking at the
+     * current state of the tree.
+     *
+     * @return int
+     */
+    protected function calcSize() {
+        $size = 2; // Including left and right
+        foreach ($this->children as $child) {
+            $size += $child->calcSize();
+        }
+
+        return $size;
+    }
+
+    /**
+     * Gets the size of the node, i.e. the difference between the left and
+     * right bound plus one. This will calculate the size by subtracting the
+     * left bound from the right bound and adding 1
      *
      * @return int
      */
     public function getSize() {
-        $size = 2; // Including left and right
-        foreach ($this->children as $child) {
-            $size += $child->getSize();
-        }
-
-        return $size;
+        return 1 + $this->getRight() - $this->getLeft();
     }
 
     /**
@@ -79,12 +113,12 @@ class BranchedObject extends StorageObject
         $rightKey = $this->storage->getRightKey();
 
         $this->{$leftKey} = $startLeft;
-        $this->{$rightKey} = $startLeft + $this->getSize() - 1;
+        $this->{$rightKey} = $startLeft + $this->calcSize() - 1;
 
         $startLeft++;
         foreach ($this->children as $child) {
             $child->resetTreeLayout($startLeft);
-            $startLeft += $child->getSize();
+            $startLeft += $child->calcSize();
         }
     }
 }

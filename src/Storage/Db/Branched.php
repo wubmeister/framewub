@@ -60,4 +60,58 @@ class Branched extends AbstractStorage
 
         return $this->getTreeFromData($resultSet);
     }
+
+    /**
+     * Appends a persistent node as direct child to another, updating the
+     * left/right bounds.
+     *
+     * @param mixed $nodeId
+     *   The ID of the node to append
+     * @param mixed $parentId
+     *   The ID of the parent node, to which the node should be appended
+     */
+    public function appendNode($nodeId, $parentId)
+    {
+
+        $node = $this->findOne($nodeId);
+        $parent = $this->findOne($parentId);
+
+        if ($node && $parent) {
+            $queries = [];
+
+            // Check if node has bounds
+            if ($node->getLeft()) {
+                // If so, first make its bounds negative
+                $nodeRight = $node->getRight();
+                $queries[] = "UPDATE `{$this->tableName}` SET `{$this->leftKey}` = -`{$this->leftKey}`, `{$this->rightKey}` = -`{$this->rightKey}` " .
+                    "WHERE `{$this->leftKey}` BETWEEN " . $node->getLeft() . " AND " . $node->getRight();
+                // Then shift everything between parent's right and node's orginal right (inclusive) by the size of the node
+                $size = $node->getSize();
+                if ($node->getLeft() > $parent->getRight()) {
+                    $queries[] = "UPDATE `{$this->tableName}` SET `{$this->leftKey}` = `{$this->leftKey}` + {$size} WHERE `{$this->leftKey}` BETWEEN " . $parent->getRight() . " AND " . $node->getRight();
+                    $queries[] = "UPDATE `{$this->tableName}` SET `{$this->rightKey}` = `{$this->rightKey}` + {$size} WHERE `{$this->rightKey}` BETWEEN " . $parent->getRight() . " AND " . $node->getRight();
+                } else {
+                    $queries[] = "UPDATE `{$this->tableName}` SET `{$this->leftKey}` = `{$this->leftKey}` - {$size} WHERE `{$this->leftKey}` BETWEEN " . $node->getRight() . " AND " . $parent->getRight();
+                    $queries[] = "UPDATE `{$this->tableName}` SET `{$this->rightKey}` = `{$this->rightKey}` - {$size} WHERE `{$this->rightKey}` BETWEEN " . $node->getRight() . " AND " . $parent->getRight();
+                }
+                // Then update the negative bounds of the node
+                $shift = $node->getLeft() - $parent->getRight();
+                $shiftStr = $shift < 0 ? '- ' . (-$shift) : '+ ' . $shift;
+                $queries[] = "UPDATE `{$this->tableName}` SET `{$this->leftKey}` = `{$this->leftKey}` {$shiftStr}, `{$this->rightKey}` = `{$this->rightKey}` {$shiftStr} WHERE `{$this->leftKey}` BETWEEN -" . $node->getRight() . " AND -" . $node->getLeft();
+                // Then make the bounds of the node postive again
+                $queries[] = "UPDATE `{$this->tableName}` SET `{$this->leftKey}` = -`{$this->leftKey}`, `{$this->rightKey}` = -`{$this->rightKey}` " .
+                    "WHERE `{$this->leftKey}` BETWEEN " . (-$node->getRight() + $shift) . " AND " . (-$node->getLeft() + $shift);
+            } else {
+                // If not, shift everything from parent's right to the right by the size of the node (= 2)
+                $queries[] = "UPDATE `{$this->tableName}` SET `{$this->leftKey}` = `{$this->leftKey}` + 2 WHERE `{$this->leftKey}` >= " . $node->getRight();
+                $queries[] = "UPDATE `{$this->tableName}` SET `{$this->rightKey}` = `{$this->rightKey}` + 2 WHERE `{$this->rightKey}` >= " . $node->getRight();
+                // Then update the bounds of the node
+                $left = $parent->getRight();
+                $right = $left + 1;
+                $queries[] = "UPDATE `{$this->tableName}` SET `{$this->leftKey}` = {$left}, `{$this->rightKey}` = {$right} WHERE `id` = {$node->id}";
+            }
+
+            $this->db->commitTransaction($queries);
+        }
+    }
 }
