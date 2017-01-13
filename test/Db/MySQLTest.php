@@ -24,6 +24,7 @@ class MySQLTest extends TestCase
 
         $this->assertEquals('`test`', $this->db->quoteIdentifier('test'));
         $this->assertEquals('`foo`.`bar`', $this->db->quoteIdentifier('foo.bar'));
+        $this->assertEquals('`foo`.*', $this->db->quoteIdentifier('foo.*'));
     }
 
     public function testPrepare()

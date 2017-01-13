@@ -42,6 +42,13 @@ class SelectTest extends TestCase
         // Assert the resulting query
         $this->assertEquals("SELECT `foo`.*, `bar`.* FROM `foo`, `bar`", (string)$select);
 
+        // Test multiple tables with columns from only one table
+        $select = new Select($this->db);
+        // Add 'from' clause
+        $select->from([ 'foo', 'bar' ], 'bar.*');
+        // Assert the resulting query
+        $this->assertEquals("SELECT `bar`.* FROM `foo`, `bar`", (string)$select);
+
         // Test multiple tables with aliases
         $select = new Select($this->db);
         // Add 'from' clause

@@ -37,7 +37,8 @@ class MySQL extends Generic
 	 */
 	public function quoteIdentifier(string $identifier)
 	{
-		return '`' . str_replace('.', '`.`', $identifier) . '`';
+		$identifier = '`' . str_replace('.', '`.`', $identifier) . '`';
+		return str_replace('`*`', '*', $identifier);
 	}
 
 	/**
