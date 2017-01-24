@@ -63,7 +63,7 @@ class VarExp
     public function __construct(string $pattern, bool $urlMode = false)
     {
         $this->urlMode = $urlMode;
-        $this->pattern = preg_replace('/\{([^:]+):[^\}]\}/', '{$1}', $pattern);
+        $this->pattern = preg_replace('/\{([^:]+):[^\}]*\}/', '{$1}', $pattern);
 
         $pattern = str_replace('\\{', '#ESCACC#', $pattern);
         $matchExp = '/' . ($urlMode ? '\/?' : '') . '\{([a-zA-Z][a-zA-Z0-9_]*)(:([^\}]+))?\}(\?)?/';

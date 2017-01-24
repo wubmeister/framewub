@@ -34,6 +34,24 @@ class VarExpTest extends TestCase
         $this->assertEquals(null, $match);
     }
 
+    public function testMatchTypes()
+    {
+        // The expression to test
+        $exp = new VarExp('expression {foo:int} with optional {bar:string}?');
+        $match = $exp->match('expression FOO with optional BAR');
+
+        // Assert
+        $this->assertEquals(null, $match);
+
+        // Assert
+        $match = $exp->match('expression 1234 with optional BAR');
+        $this->assertInternalType('array', $match);
+        $this->assertArrayHasKey('foo', $match);
+        $this->assertEquals('1234', $match['foo']);
+        $this->assertArrayHasKey('bar', $match);
+        $this->assertEquals('BAR', $match['bar']);
+    }
+
     public function testStaticMatch()
     {
         // The expression to test
@@ -106,6 +124,14 @@ class VarExpTest extends TestCase
         $result = $exp->build([ 'bar' => 'BAR' ]);
         // Assert
         $this->assertEquals('expression {foo} with optional BAR', $result);
+    }
+
+    public function testBuildTypes()
+    {
+        // The expression to test
+        $exp = new VarExp('expression {foo:int} with optional {bar:string}?');
+        $result = $exp->build([ 'foo' => '1234', 'bar' => 'BAR' ]);
+        $this->assertEquals('expression 1234 with optional BAR', $result);
     }
 
     public function testStaticBuild()
