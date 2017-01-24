@@ -18,6 +18,8 @@ class VarExpTest extends TestCase
         $this->assertEquals('FOO', $match['foo']);
         $this->assertArrayHasKey('bar', $match);
         $this->assertEquals('BAR', $match['bar']);
+        $this->assertArrayHasKey('*', $match);
+        $this->assertEquals('expression FOO with optional BAR', $match['*']);
 
         // The expression to test
         $match = $exp->match('expression FOO with optional ');

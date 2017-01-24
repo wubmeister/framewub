@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for literal routes
+ * Class for segment routes
  *
  * @package    framewub/route
  * @author     Wubbo Bos <wubbo@wubbobos.nl>
@@ -12,31 +12,30 @@
 
 namespace Framewub\Route;
 
-/**
- * Route interface
- */
-class Literal extends AbstractRoute
+use Framewub\Util\VarExp;
+
+class Segment extends AbstractRoute
 {
     /**
-     * The descriptor for this route
+     * The variable expression representing the pattern
      *
-     * @var string
+     * @var Framewub\Util\VarExp
      */
-    protected $descriptor;
+    protected $varExp;
 
     /**
      * The constructor should take a route descriptor and a piece of middleware
      * (usually a class name).
      *
      * @param string $descriptor
-     *   The route descriptor (pattern, resource name, literal, etc)
+     *   The route pattern
      * @param mixed $middleware
      *   The middleware to map to this route
      */
     public function __construct(string $descriptor, $middleware)
     {
         parent::__construct($descriptor, $middleware);
-        $this->descriptor = $descriptor;
+        $this->varExp = new VarExp($descriptor, true);
     }
 
     /**
@@ -46,14 +45,15 @@ class Literal extends AbstractRoute
      *   The URL, starting with a slash ('/')
      *
      * @return array
-     *   If the URL matches the route, it returns an array with the middleware, the
-     *   params and rest of the URL. If the URL doesn't match, it returns null.
+     *   If the URL matches the route, it returns an array with the middleware,
+     *   the params and rest of the URL. If the URL doesn't match, it returns
+     *   null.
      */
     public function match($url)
     {
-        $len = strlen($this->descriptor);
-        if (substr($url, 0, $len) == $this->descriptor) {
-            $result = [ 'middleware' => $this->middleware, 'params' => [], 'tail' => substr($url, $len) ];
+        $match = $this->varExp->match($url);
+        if ($match) {
+            $result = [ 'middleware' => $this->middleware, 'params' => $match, 'tail' => substr($url, strlen($match['*'])) ];
             $this->matchChildRoutes($result['tail'], $result);
             return $result;
         }
@@ -64,7 +64,7 @@ class Literal extends AbstractRoute
      * Builds a URL based on this route
      *
      * @param array $params
-     *   OPTIONAL. Params are not used for this class
+     *   OPTIONAL. The parameters to use. Defaults to an empty array
      *
      * @return string
      *   The built URL
@@ -72,7 +72,11 @@ class Literal extends AbstractRoute
     public function build()
     {
         $args = func_get_args();
-        $url = $this->descriptor . $this->buildChildRoutes($args);
+        $params = count($args) > 0 ? $args[count($args) - 1] : [];
+        if (!is_array($params)) {
+            $params = [];
+        }
+        $url = $this->varExp->build($params) . $this->buildChildRoutes($args);
         return $url;
     }
 }

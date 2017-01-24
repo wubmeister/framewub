@@ -80,14 +80,14 @@ class VarExp
                         $pat = '\d*\.?\d+';
                         break;
                     case 'string':
-                        $pat = '.*';
+                        $pat = $urlMode ? '[^\/]*' : '.*';
                         break;
                     default:
                         $pat = $match[3][0];
                         break;
                 }
             } else {
-                $pat = '.*';
+                $pat = $urlMode ? '[^\/]*' : '.*';
             }
 
             $exp = $exp . str_replace('/', '\\/', preg_quote(substr($pattern, 0, $match[0][1]))) . "(" . ($urlMode ? '\\/' : '') . "{$pat})";
@@ -99,7 +99,7 @@ class VarExp
 
         $exp .= preg_quote($pattern);
 
-        $this->regex = '/^' . str_replace('#ESCACC#', '\{', $exp) . '$/';
+        $this->regex = '/^' . str_replace('#ESCACC#', '\{', $exp) . ($urlMode ? '' : '$') . '/';
     }
 
     /**
@@ -129,7 +129,7 @@ class VarExp
 
         if (preg_match($regex, $string, $match)) {
             foreach ($match as $i => $m) {
-                $result[$params[$i]] = $urlMode && strlen($m) && $m[0] == '/' ? substr($m, 1) : $m;
+                $result[$params[$i]] = $urlMode && strlen($m) && $i > 0 && $m[0] == '/' ? substr($m, 1) : $m;
             }
             return $result;
         }
